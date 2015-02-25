@@ -1,0 +1,44 @@
+"*":
+  "exception-reporting":
+    userId: "172d991d-e303-49ff-c1ea-a27528a5fd97"
+  welcome:
+    showOnStartup: false
+  metrics:
+    userId: "c043c6661e0b2225a858c7e568ffa17fcdeb68a0"
+  editor:
+    fontFamily: "Source Code Pro"
+    showIndentGuide: true
+    preferredLineLength: 120
+    invisibles: {}
+  core:
+    disabledPackages: [
+      "atom-jshint"
+    ]
+  "atom-beautify":
+    _analyticsUserId: "23d4c686-6cc4-47c2-80ee-a596dbed4987"
+    muteUnsupportedLanguageErrors: true
+    disabledLanguages: [
+      "GitHub Markdown"
+    ]
+    beautifyOnSave: true
+  linter:
+    lintOnChange: false
+    statusBar: "Show all errors"
+    showInfoMessages: true
+  "atom-jshint":
+    hintOnModify: false
+    hintOnSave: false
+    showErrorPanel: false
+    watchConfig: false
+  "linter-jscs":
+    preset: "google"
+  "linter-shellcheck":
+    shellcheckExecutablePath: "/usr/local/bin"
+  fixmyjs:
+    legacy: false
+  "autoclose-html": {}
+  "linter-jshint": {}
+  react: {}
+  "linter-jsxhint":
+    use_6to5_transform: true
+  "autocomplete-plus": {}

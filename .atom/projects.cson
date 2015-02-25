@@ -1,0 +1,36 @@
+'Promise It Won\'t Hurt':
+  'title': 'Promise It Won\'t Hurt'
+  'icon': 'icon-telescope'
+  'paths': [
+    '/Users/gears/Documents/js/nodeschool/promise-shop'
+  ]
+'Functional JavaScript WorkShop':
+  'title': 'Functional JavaScript WorkShop'
+  'icon': 'icon-telescope'
+  'paths': [
+    '/Users/gears/Documents/js/nodeschool/functionaljavascript'
+  ]
+'Lololodash':
+  'title': 'Lololodash'
+  'icon': 'icon-telescope'
+  'paths': [
+    '/Users/gears/Documents/js/nodeschool/lololodash'
+  ]
+'JSCS':
+  'title': 'JSCS'
+  'icon': 'icon-telescope'
+  'paths': [
+    '/Users/gears/Documents/jscs'
+  ]
+'Exercism':
+  'title': 'Exercism'
+  'icon': 'icon-telescope'
+  'paths': [
+    '/Users/gears/exercism/javascript'
+  ]
+'Amadeus Static':
+    'title': 'Amadeus Static'
+    'icon': 'icon-telescope'
+    'paths': [
+      '/Users/gears/Documents/svn/assessment-services/web/src/main/webapp/WEB-INF/static'
+    ]
