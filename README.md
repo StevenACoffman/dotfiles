@@ -56,6 +56,7 @@ xcode-select --install
 ### Install from App Store
 
 * [Pages](https://itunes.apple.com/us/app/pages/id409201541?mt=12&uo=4)
+* [Keynote](https://itunes.apple.com/us/app/keynote/id361285480?mt=8)
 * [Pomodoro One](https://itunes.apple.com/us/app/pomodoro-one/id907364780?mt=12)
 * [Skitch](https://itunes.apple.com/us/app/skitch-snap.-mark-up.-share./id425955336?mt=12&uo=4)
 * [Twitter](https://itunes.apple.com/us/app/twitter/id409789998?mt=12&uo=4)

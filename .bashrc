@@ -14,6 +14,10 @@ export NODE_PATH="/usr/local/lib/node_modules"
 #export MAVEN_HOME=/usr/share/maven/
 export PATH="/usr/local/opt/maven/libexec/bin:/usr/local/bin:/usr/local/sbin:~/bin:/usr/local/share/npm/bin:$MAVEN_HOME/bin:$JBOSS_HOME/bin:/usr/local/opt/subversion/libexec:$PATH"
 export EDITOR='mate --wait'
+#Ruby stuff.
+#Ok, I don't know if this would be better
+#eval "$(rbenv init - --no-rehash)"
+if which rbenv > /dev/null; then eval "$(rbenv init - --no-rehash)"; fi
 
 
 $(boot2docker shellinit)
