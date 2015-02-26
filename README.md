@@ -22,6 +22,13 @@ vcsh dotfiles pull origin master
 vcsh dotfiles push -u origin master
 ```
 
+### How to update it
+```bash
+vcsh dotfiles add README.md
+vcsh dotfiles commit -m "Message goes here"
+vcsh dotfiles push -u origin master
+```
+
 ### How to restore it
 1. Install vcsh and git, github (as below)
 2. Run these commands
@@ -69,8 +76,6 @@ xcode-select --install
 * Development
   * [Dropbox](https://www.dropbox.com/install2)
   * [GitHub](http://mac.github.com)
-  * [LiveReload](http://livereload.com)
- * [LiveReload Extensions](http://help.livereload.com/kb/general-use/browser-extensions)
  * [Sublime Text 3](http://www.sublimetext.com/3)
 
 * Utilities
@@ -78,27 +83,7 @@ xcode-select --install
   * iTerm 2 (installed via Cask)
   * [Quicksilver](http://qsapp.com)
   * [Skype](http://www.skype.com/en/download-skype/skype-for-computer/)
-  * [Spotify](https://www.spotify.com/us/download/mac/)
 	* [Transmit](http://panic.com/transmit)
-
-* Ruby Stuff \(Don\'t forget to add eval to .bashrc \)
-```bash
-brew install rbenv ruby-build rbenv-gem-rehash rbenv-default-gems
-eval "$(rbenv init -)"
-rbenv install 2.1.5
-rbenv global 2.1.5
-gem install compass
-```
-
-Fonts
------
-[Mensch coding font](http://robey.lag.net/2010/06/21/mensch-font.html)
-Consolas
-OpenSans
-DejaVu Sans
-Source Code Pro
-Consolas
-
 
 #Xcode Command Line Tools
 
@@ -124,13 +109,69 @@ brew install caskroom/cask/brew-cask
 
 ```
 
+* Ruby Stuff \(Don\'t forget to add eval to .bashrc \)
+```bash
+brew install rbenv ruby-build rbenv-gem-rehash rbenv-default-gems
+eval "$(rbenv init -)"
+rbenv install 2.1.5
+rbenv global 2.1.5
+gem install compass
+```
+
+* Node Stuff
+```bash
+brew cask install node
+sudo npm install -g n
+sudo n latest
+sudo chown -R "$USER" /usr/local/lib/node_modules
+sudo chown -R "$USER" ~/.npm
+#Node Utilities
+sudo npm install -g yo
+sudo npm install -g bower
+sudo npm install -g browserify
+sudo npm install -g csscomb
+sudo npm install -g csslint
+sudo npm install -g eslint
+sudo npm install -g fixmyjs
+sudo npm install -g grunt-cli
+sudo npm install -g gulp
+sudo npm install -g htmlhint
+sudo npm install -g jshint
+sudo npm install -g jsinspect
+sudo npm install -g jsxhint
+sudo npm install -g less
+sudo npm install -g mocha
+#Yeoman Generators
+sudo npm install -g generator-jhipster
+sudo npm install -g generator-mocha
+#NodeSchool workshops
+sudo npm install -g 6to5
+sudo npm install -g bacon-love
+sudo npm install -g browserify-adventure
+sudo npm install -g bug-clinic
+sudo npm install -g count-to-6
+sudo npm install -g expressworks
+sudo npm install -g functional-javascript-workshop
+sudo npm install -g git-it
+sudo npm install -g javascripting
+sudo npm install -g kick-off-koa
+sudo npm install -g learn-generators
+sudo npm install -g learnyoumongodb
+sudo npm install -g learnyounode
+sudo npm install -g lololodash
+sudo npm install -g planetproto
+sudo npm install -g promise-it-wont-hurt
+```
+
 ## Install applications via Homebrew Cask
 ```bash
 brew cask install java
 brew cask install eclipse
+brew cask install intellij-idea
 brew cask install atom
 brew cask install iterm2
 brew cask install google-chrome
+brew cask install firefox
 brew cask install textmate
 brew cask install skype
 brew cask install screenhero
@@ -141,17 +182,27 @@ brew cask install tunnelbear
 brew cask install vlc
 brew cask install sourcetree
 brew cask install stellarium
-brew cask install intellij-idea
 brew cask install beyond-compare
 ```
 
-## Install Homebrew apps that require java
+## Install Homebrew apps that require java to be installed first
 ```bash
 brew install tomcat
 brew install tomcat-native
 brew install --with-java subversion
 brew install maven
 ```
+
+* Fonts
+```bash
+brew tap caskroom/fonts
+brew cask install font-inconsolata
+brew cask install font-source-code-pro
+brew cask install font-open-sans
+brew cask install font-dejavu-sans
+```
+  * [Mensch coding font](http://robey.lag.net/2010/06/21/mensch-font.html)
+  * Consolas
 
 # OS X Preferences
 
@@ -185,9 +236,15 @@ Setup Github
 ------------
 ```bash
 ssh-keygen -t rsa -C "gears@umich.edu"
-
-# Copy ssh key to github.com
-subl ~/.ssh/id_rsa.pub
+chmod 700 ~
+chmod 700 ~/.ssh
+chmod 700 ~/.ssh/id_rsa
+# start the ssh-agent in the background
+eval "$(ssh-agent -s)"
+ssh-add -K
+# Copies the contents of the id_rsa.pub file to your clipboard
+pbcopy < ~/.ssh/id_rsa.pub
+# Copy ssh key to github.com as per https://help.github.com/articles/generating-ssh-keys/
 
 # Test connection
 ssh -T git@github.com
@@ -209,6 +266,15 @@ git config --global color.ui true
 * Install Command Line Tools:
 `SourceTree > Install Command Line Tools`
 
+# Atom
+* Install Linter (linter-jscs, linter-jshint, linter-shellcheck, linter-scss, linter-htmlhint )
+* Install atom-beautify
+* Install fixmyjs package
+* Install AutoComplete-plus
+* Install color-picker
+* Install file-icons
+* Install project-manager
+
 
 # Sublime Text
 
@@ -218,6 +284,16 @@ Add Sublime Text CLI
 ```bash
 mkdir -p ~/bin && ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ~/bin/subl
 ```
+
+## Chrome
+* install postman
+* install jetpack
+* install advanced rest client
+* install form filler
+* install uxcheck
+* install colorzilla
+* install ruul
+* install perfect pixel
 
 ## Tomcat
 * bin/setenv.sh
