@@ -1,5 +1,5 @@
 #!/bin/bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 #export JAVA_HOME='/System/Library/Frameworks/JavaVM.framework/Home'
 #export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/Current/Home
 #Possibly Problematic next line:
@@ -12,11 +12,11 @@ export JBOSS_HOME=/usr/local/opt/jboss-as/libexec
 export SONAR_RUNNER_HOME=/usr/local/opt/sonar-runner/libexec
 export NODE_PATH="/usr/local/lib/node_modules"
 #export MAVEN_HOME=/usr/share/maven/
-export PATH="/usr/local/opt/maven/libexec/bin:/usr/local/bin:/usr/local/sbin:~/bin:/usr/local/share/npm/bin:$MAVEN_HOME/bin:$JBOSS_HOME/bin:/usr/local/opt/subversion/libexec:$PATH"
+export PATH="/usr/local/opt/maven/libexec/bin:/usr/local/bin:/usr/local/sbin:~/bin:/usr/local/share/npm/bin:$MAVEN_HOME/bin:~/.rbenv/shims:/usr/local/opt/subversion/libexec:$PATH"
 export EDITOR='mate --wait'
 #Ruby stuff.
 #Ok, I don't know if this would be better
-#eval "$(rbenv init - --no-rehash)"
+#eval "$(rbenv init -)"
 if which rbenv > /dev/null; then eval "$(rbenv init - --no-rehash)"; fi
 
 
