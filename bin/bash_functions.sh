@@ -28,6 +28,16 @@ function golog() {
   cd /usr/local/opt/tomcat/libexec/logs
 }
 
+function mvnci()
+{
+  mci
+}
+
+function mvnwrd()
+{
+  rdp
+}
+
 function rdp() {
 	redeployTomcat
 }
@@ -54,9 +64,9 @@ function redeployTomcat() {
 	if [ "$cwd_top" = 'web' ]; then
         mvn -DskipTests=true -Denv=${TIER} -Ddatabase=${TIER} -Djetty.skip=true -Dmaven.install.skip=true tomcat7:redeploy
 	else
-		if [ "$cwd_top" = "alias" -o "$cwd_top" = "assessment-services" -o "$cwd_top" = "assessment-framework" -o "$cwd_top" = "coreservices" ]; then
+		if [ "$cwd_top" = "alias" -o "$cwd_top" = "assessment_services" -o "$cwd_top" = "assessment_framework" -o "$cwd_top" = "coreservices" ]; then
 			cd web
-	        mvn -DskipTests=true -Denv=${TIER} -Ddatabase=${TIER} -Djetty.skip=true -Dmaven.install.skip=true tomcat7:redeploy
+	    mvn -DskipTests=true -Denv=${TIER} -Ddatabase=${TIER} -Djetty.skip=true -Dmaven.install.skip=true tomcat7:redeploy
 			cd "$old_cwd"
 		fi
 	fi
@@ -64,24 +74,24 @@ function redeployTomcat() {
 
 function redeployTomcatAll() {
 	old_cwd=${PWD}
-	cd ~/Documents/svn/alias && \
+	cd ~/Documents/git/alias && \
 	redeployTomcat && \
-	cd ~/Documents/svn/coreservices && \
+	cd ~/Documents/git/coreservices && \
 	redeployTomcat && \
-	cd ~/Documents/svn/assessment-framework && \
+	cd ~/Documents/git/assessment_framework && \
 	redeployTomcat && \
-	cd ~/Documents/svn/assessment-services && \
+	cd ~/Documents/git/assessment_services && \
 	redeployTomcat && \
 	cd "$old_cwd"
 }
 function reliquibase() {
 	old_cwd=${PWD}
 	echo "Running Liquibase for Assessment Framework for tier ${TIER}"
-	#cd ~/Documents/svn/coreservices/liquibase
+	#cd ~/Documents/git/coreservices/liquibase
 	#mvn liquibase:update -Ddatabase=dev
-	cd ~/Documents/svn/assessment-framework/liquibase
+	cd ~/Documents/git/assessment_framework/liquibase
 	mvn liquibase:update -Ddatabase=${TIER}
-	#cd ~/Documents/svn/assessment-services/liquibase
+	#cd ~/Documents/git/assessment_services/liquibase
 	#mvn liquibase:update -Ddatabase=dev
 	cd "$old_cwd"
 }
@@ -92,13 +102,13 @@ function mavenCleanInstall() {
 function mavenCleanInstallAll() {
 	reliquibase
 	old_cwd=${PWD}
-	cd ~/Documents/svn/alias && \
+	cd ~/Documents/git/alias && \
 	mavenCleanInstall && \
-	cd ~/Documents/svn/coreservices && \
+	cd ~/Documents/git/coreservices && \
 	mavenCleanInstall && \
-	cd ~/Documents/svn/assessment-framework && \
+	cd ~/Documents/git/assessment_framework && \
 	mavenCleanInstall && \
-	cd ~/Documents/svn/assessment-services && \
+	cd ~/Documents/git/assessment_services && \
 	mavenCleanInstall && \
 	cd "$old_cwd" && \
 	popupWarning 'Maven Clean Install Complete'
@@ -111,13 +121,13 @@ function noTestsBuildAll() {
 	reliquibase
 	old_cwd=${PWD}
 	echo "Old directory is ${old_cwd}"
-	cd ~/Documents/svn/alias && \
+	cd ~/Documents/git/alias && \
 		noTestsBuild && \
-		cd ~/Documents/svn/coreservices && \
+		cd ~/Documents/git/coreservices && \
 		noTestsBuild && \
-		cd ~/Documents/svn/assessment-framework && \
+		cd ~/Documents/git/assessment_framework && \
 		noTestsBuild && \
-		cd ~/Documents/svn/assessment-services && \
+		cd ~/Documents/git/assessment_services && \
 		noTestsBuild && \
 		echo "$old_cwd" && \
 		cd "$old_cwd" && \
@@ -127,7 +137,7 @@ function doESS() {
   PWD=$(pwd)
   echo "starting in $PWD"
   cd ~
-  buildDir="Documents/svn/examscore"
+  buildDir="Documents/git/examscore"
   cd ~/"$buildDir"
   rm -r -f target
   mvn clean package
@@ -161,6 +171,10 @@ tell application "System Events"
 	display dialog "Warning: $1"
 end tell
 EOT
+}
+
+docker-ip() {
+  boot2docker ip 2> /dev/null
 }
 
 #Call arguments verbatim

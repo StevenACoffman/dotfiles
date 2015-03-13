@@ -14,7 +14,7 @@ if hash gem 2>/dev/null; then
   gem update
 fi
 
-if hash gem 2>/dev/null; then
+if hash rbenv 2>/dev/null; then
   echo "rbenv rehash"
   rbenv rehash
 fi
@@ -53,9 +53,11 @@ if hash npm 2>/dev/null; then
   #sudo npm cache clean
   #sudo curl https://www.npmjs.org/install.sh | sh
   sudo chown -R "$USER" /usr/local/lib/node_modules
+  sudo chown -R "$USER" ~/.config
   sudo chown -R "$USER" ~/.npm
   #sudo npm update
   #sudo npm update -g
+  ## see https://gist.github.com/othiym23/4ac31155da23962afd0e
   echo "updating node toplevel packages"
   set -e
   set -x
