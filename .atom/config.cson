@@ -13,6 +13,8 @@
   core:
     disabledPackages: [
       "atom-jshint"
+      "linter-htmlhint"
+      "linter-bootlint"
     ]
   "atom-beautify":
     _analyticsUserId: "23d4c686-6cc4-47c2-80ee-a596dbed4987"
@@ -42,3 +44,9 @@
   "linter-jsxhint":
     use_6to5_transform: true
   "autocomplete-plus": {}
+".coffee.jsx.source":
+  editor:
+    preferredLineLength: 120
+".js.jsx.source":
+  editor:
+    preferredLineLength: 120
