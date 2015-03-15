@@ -106,11 +106,26 @@ brew install caskroom/cask/brew-cask
 ## Install common applications via Homebrew
 ```bash
 brew install git curl lynx mongodb pandoc phantomjs redis shellcheck springboot ssh-copy-id wget
+brew install
+brew install legit
 brew install caskroom/cask/brew-cask
-
 ```
 
-* Ruby Stuff \(Don\'t forget to add eval to .bashrc \)
+## Install Git-Legit git aliases
+```
+legit install
+```
+This will install:
+* git switch     '!legit switch "$@"'
+* git branches   '!legit branches'
+* git sprout     '!legit sprout "$@"'
+* git unpublish  '!legit unpublish "$@"'
+* git harvest    '!legit harvest "$@"'
+* git sync       '!legit sync "$@"'
+* git publish    '!legit publish "$@"'
+* git graft      '!legit graft "$@"'
+
+# Ruby Stuff \(Don't forget to add eval to .bashrc \)
 ```bash
 brew install rbenv ruby-build rbenv-gem-rehash rbenv-default-gems
 eval "$(rbenv init -)"
@@ -184,6 +199,7 @@ brew cask install vlc
 brew cask install sourcetree
 brew cask install stellarium
 brew cask install beyond-compare
+brew cask install xquartz
 ```
 
 ## Install Homebrew apps that require java to be installed first
@@ -236,7 +252,7 @@ Set hostname
 Setup Github
 ------------
 ```bash
-ssh-keygen -t rsa -C "gears@umich.edu"
+ssh-keygen -t rsa -C "$(whoami)@umich.edu"
 chmod 700 ~
 chmod 700 ~/.ssh
 chmod 700 ~/.ssh/id_rsa
@@ -252,13 +268,13 @@ ssh -T git@github.com
 
 # Set git config values
 git config --global user.name "Steve Coffman"
-git config --global user.email "gears@umich.edu"
+git config --global user.email "$(whoami)@umich.edu"
 git config --global github.user StevenACoffman
 #git config --global github.token your_token_here
-git config --global diff.tool bc3
-git config --global difftool.bc3 trustExitCode true
-git config --global merge.tool bc3
-git config --global mergetool.bc3 trustExitCode true
+git config --global diff.tool bc
+git config --global difftool.bc trustExitCode true
+git config --global merge.tool bc
+git config --global mergetool.bc trustExitCode true
 git config --global core.editor "mate --wait"
 git config --global color.ui true
 ```
