@@ -1,0 +1,50 @@
+## Next few from GUM Git Makeover
+# More info: https://github.com/saintsjd/gum
+# gum aliases for git version 3
+
+# Show short status with current branch name
+st="!f() { br=$(git status | head -1) && echo "${br}" && git status -s; }; f"
+
+#add files to the staging area
+freeze="!f() { ( [ -z $@ ] && git add -A || git add -A "$@" ) && git st; }; f"
+
+# remove files from the staging area
+unfreeze="!f() { ([ -z "$@" ] && (git reset -q HEAD > /dev/null 2>&1 || echo "first commit must be unfrozen file by file. better error message coming soon") || (git reset -q HEAD -- $@ > /dev/null 2>&1 || git rm -q --cached $@ ) ) && git st; }; f"
+
+# throws away all uncommitted changes
+# git rewind – resets all changes done to the working copy (including staging area)
+# git rewind FILES – resets all changes done to the given files (including staging area)
+rewind = ![[ -z "$@" ]] && git reset --hard HEAD || git checkout HEAD
+
+
+## Next few From Advanced Aliases
+# More info: http://blog.blindgaenger.net/advanced_git_aliases.html
+
+# Make this a git repo
+this = !git init && git add . && git commit -m \"initial commit\"
+
+# List Aliases
+list_alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\t=> \\2/' | sort
+
+# Remove files which have been deleted
+remove_deleted = !git ls-files -z --deleted | xargs -0 git rm
+
+# Quickly Ignore a file
+ignore = !([ ! -e .gitignore ] && touch .gitignore) | echo $1 >>.gitignore
+
+## GIT UP
+## Badass git pull alternative
+# More info: https://gist.github.com/kneath/249223
+# Add this little snippet to your ~/.gitconfig and it amps up your git pull by means of git up
+#
+#    - Adds in a list of the commits you're pulling down
+#    - Auto-prunes remote branches
+#    - Defaults to pull --rebase - gets rid of unnecessary merge commits.
+#        If you don't know what rebase does, this is probably safe for you.
+#        If you know what rebase does, you should know where this will not be safe for you.
+#
+
+up = !sh -c 'git pull --rebase --prune && git log --pretty=format:\"%Cred%ae %Creset- %C(yellow)%s %Creset(%ar)\" HEAD@{1}..'
+
+## You can make whole scripts as git aliases
+# More info http://blogs.atlassian.com/2014/10/advanced-git-aliases/

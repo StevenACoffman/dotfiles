@@ -1,0 +1,68 @@
+[user]
+	name = Steve Coffman
+	email = gears@umich.edu
+[core]
+	excludesfile = /Users/gears/.gitignore
+	editor = mate -w
+	autocrlf = input
+	trustctime = false
+	precomposeunicode = false
+[color]
+	ui = true
+[diff]
+	tool = bc
+[difftool]
+	prompt = false
+	opendiff = trustExitCode
+	bc = trustExitCode
+
+[difftool "bcomp"]
+    trustExitCode = true
+    cmd = "/usr/local/bin/bcomp" -ro "$LOCAL" "$REMOTE"
+[merge]
+	tool = bc
+[mergetool]
+    prompt = false
+	opendiff = trustExitCode
+	bc = trustExitCode
+	keepBackup = false
+[mergetool "bcomp"]
+    trustExitCode = true
+    cmd = "/usr/local/bin/bcomp" "$LOCAL" "$REMOTE" "$BASE" "$MERGED"
+[push]
+	default = upstream
+[credential]
+	helper = osxkeychain
+[difftool "sourcetree"]
+	cmd = /usr/local/bin/bcomp -ro $LOCAL $REMOTE
+[mergetool "sourcetree"]
+	cmd = /usr/local/bcomp $LOCAL $REMOTE
+	trustExitCode = true
+[github]
+	user = StevenACoffman
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
+[rerere]
+	enabled = true
+[branch]
+	autosetuprebase = always
+[pull]
+	rebase = true
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+[alias]
+	unstage = reset HEAD --
+	unstash = stash pop
+	co = checkout
+	ci = commit
+	br = branch
+	switch = !legit switch \"$@\"
+	branches = !legit branches
+	sprout = !legit sprout \"$@\"
+	unpublish = !legit unpublish \"$@\"
+	harvest = !legit harvest \"$@\"
+	sync = !legit sync \"$@\"
+	publish = !legit publish \"$@\"
+	graft = !legit graft \"$@\"

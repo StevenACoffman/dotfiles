@@ -44,9 +44,9 @@
   "linter-jsxhint":
     use_6to5_transform: true
   "autocomplete-plus": {}
-".coffee.jsx.source":
+".js.jsx.source":
   editor:
     preferredLineLength: 120
-".js.jsx.source":
+".coffee.jsx.source":
   editor:
     preferredLineLength: 120
