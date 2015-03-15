@@ -196,7 +196,11 @@ dist
 *.css.map
 .tmp
 
-### NOT SURE WHAT THIS IS FROM ### 
+### ATOM ###
+.atom/packages
+.atom/storage
+.atom/.apm
+
+### NOT SURE WHAT THIS IS FROM ###
 test-results.xml
 .gitignore
-
