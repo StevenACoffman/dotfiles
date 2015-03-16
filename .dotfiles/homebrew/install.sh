@@ -38,7 +38,7 @@ for PACKAGE in atom textmate beyond-compare skype google-chrome firefox sourcetr
   fi
 done
 
-#Iterm2 has legacy app name
+#Iterm2 has legacy item.app name
 if [ ! -d "/opt/homebrew-cask/Caskroom/iterm2" ]; then
 #echo iterm2 was not installed with cask
   if [ ! -n "$(find /Applications -maxdepth 1 -iname "iterm.app")" ]; then
