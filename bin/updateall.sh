@@ -31,6 +31,8 @@ then
     #git reset --hard origin/master
     #git clean -df
   fi
+  #discard old versions:
+  #brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup
 
   echo "brew update"
   brew update
@@ -42,6 +44,10 @@ TOMCAT_DIR="/usr/local/Cellar/tomcat"
 if [  -d "${TOMCAT_DIR}" ]; then
   echo updating new tomcat with old config
   tomcatupdate.sh
+fi
+if has apm 2>/dev/null; then
+  #update Atom
+  apm update --compatible --no-confirm
 fi
 
 if hash npm 2>/dev/null; then
