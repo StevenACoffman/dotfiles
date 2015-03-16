@@ -39,3 +39,5 @@ if [ -z "$(brew ls --versions subversion)" ]
 then
   brew install --with-java subversion
 fi
+
+exit 0

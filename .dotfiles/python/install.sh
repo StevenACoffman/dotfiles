@@ -33,3 +33,5 @@ fi
 
 # NOTE: that the only time you should be asked for yout password is during homebrew installation
 # if all goes correctly than none of above commands would ask you for your passoword / would want you to use sudo
+
+exit 0

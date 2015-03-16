@@ -1,16 +1,13 @@
 #!/bin/sh
 
-if hash rbenv 2>/dev/null
-then
-  echo "  Installing rbenv for you."
-  brew install rbenv > /tmp/rbenv-install.log
-fi
+for PACKAGE in rbenv ruby-build rbenv-gem-rehash rbenv-default-gems; do
+  if [ -z "$(brew ls --versions $PACKAGE)" ]
+  then
+    brew install $PACKAGE
+  fi
+done
 
-if hash ruby-build 2>/dev/null
-then
-  echo "  Installing ruby-build for you."
-  brew install ruby-build > /tmp/ruby-build-install.log
-fi
-
-
+# Get Compass and SASS
 gem install compass
+
+exit 0
