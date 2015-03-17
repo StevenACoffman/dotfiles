@@ -11,7 +11,6 @@ export MAVEN_OPTS='-Xms256m -XX:MaxPermSize=1024m -Xmx1024m'
 export JBOSS_HOME=/usr/local/opt/jboss-as/libexec
 export SONAR_RUNNER_HOME=/usr/local/opt/sonar-runner/libexec
 export NODE_PATH="/usr/local/lib/node_modules"
-#export MAVEN_HOME=/usr/share/maven/
 export PATH="/usr/local/opt/maven/libexec/bin:/usr/local/bin:/usr/local/sbin:~/bin:~/bin/git:/usr/local/share/npm/bin:$MAVEN_HOME/bin:~/.rbenv/shims:/usr/local/opt/subversion/libexec:$PATH"
 export PYTHONPATH="/usr/local/lib/python2.7/site-packages:$PYTHONPATH"
 export EDITOR='mate --wait'
