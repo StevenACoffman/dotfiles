@@ -12,14 +12,15 @@ TOMCAT_VERSIONS=($(ls -lt $BASE_PATH |grep ^d | awk '{print $9}'))
 
 NUMBER_OF_TOMCATS=${#TOMCAT_VERSIONS[@]}
 if [ ${NUMBER_OF_TOMCATS} -lt 2 ]; then
-    echo "There are less than two versions of tomcat (${NUMBER_OF_TOMCATS} versions.)"
+    echo "Not updating because there are less than two versions of tomcat (${NUMBER_OF_TOMCATS} versions.)"
     exit 0
 fi
 NEW_TOMCAT=${TOMCAT_VERSIONS[0]}
 OLD_TOMCAT=${TOMCAT_VERSIONS[1]}
 
 if [ ! -f "$BASE_PATH/$NEW_TOMCAT/libexec/bin/setenv.sh" ]; then
-  echo "copying setenv to $BASE_PATH/$NEW_TOMCAT/libexec/bin/setenv.sh"
+  echo "Updating new tomcat version with last tomcat version configuration"
+  echo "For instance: copying setenv to $BASE_PATH/$NEW_TOMCAT/libexec/bin/setenv.sh"
   cp $BASE_PATH/$OLD_TOMCAT/libexec/bin/setenv.sh $BASE_PATH/$NEW_TOMCAT/libexec/bin
   cp $BASE_PATH/$OLD_TOMCAT/libexec/lib/activation-1.1.1.jar $BASE_PATH/$NEW_TOMCAT/libexec/lib
   cp $BASE_PATH/$OLD_TOMCAT/libexec/lib/log4j.properties $BASE_PATH/$NEW_TOMCAT/libexec/lib

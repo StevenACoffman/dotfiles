@@ -11,6 +11,8 @@
 #TIER=test
 TIER=dev
 
+#!/bin/bash
+
 function gogit() {
   echo "Changing to git directory..."
   cd ~/Documents/git
@@ -174,6 +176,3 @@ EOT
 docker-ip() {
   boot2docker ip 2> /dev/null
 }
-
-#Call arguments verbatim
-$@
