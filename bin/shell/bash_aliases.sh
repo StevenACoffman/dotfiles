@@ -10,6 +10,9 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ~="cd ~"
 alias -- -="cd -"
+alias gojs="cd ~/Documents/js"
+alias gogit="cd ~/Documents/git"
+alias gosvn="cd ~/Documents/svn"
 
 # List dir contents aliases
 # ref: http://ss64.com/osx/ls.html
@@ -53,50 +56,21 @@ alias hidedeskicons="defaults write com.apple.finder CreateDesktop -bool false &
 #alias mm="date; mountmsis;"
 #alias mgmt="date; mountmgmt;"
 
+load_aliases() {
+    declare -a files=(
+        $HOME/bin/shell/aliases/* # Aliases
+    )
 
-#resin
-alias startresin="/usr/local/resin/bin/resin_funcs.sh start first; /usr/local/resin/bin/resin_funcs.sh log first"
-alias startdebugresin="/usr/local/resin/bin/resin_funcs.sh debug first; /usr/local/resin/bin/resin_funcs.sh log first"
-alias resinlog="/usr/local/resin/bin/resin_funcs.sh log first"
-alias stopresin="/usr/local/resin/bin/resin_funcs.sh stop first"
-#you can stop resin after you have terminated resin
-alias sr="startresin; stopresin"
-alias str="stopresin"
+    # if these files are readable, source them
+    for index in ${!files[*]}
+    do
+        if [[ -r ${files[$index]} ]]; then
+            source ${files[$index]}
+        fi
+    done
+}
 
-alias startresinserver="/usr/local/resin/bin/resin_funcs.sh startserver; /usr/local/resin/bin/resin_funcs.sh serverlog"
-alias resinserverlog="/usr/local/resin/bin/resin_funcs.sh serverlog"
-alias stopresinserver="/usr/local/resin/bin/resin_funcs.sh stopserver"
-
-#jschultz was here
-#alias mwar="date; mvn package"
-#alias rdp="mvn -DskipTests=true tomcat7:redeploy"
-#alias mci="mvn -Denv=${TIER} clean install"
-#alias ntb="mvn -Denv=${TIER} -DskipTests=true clean install"
-
-
-#alias rd1="if [ -d /Volumes/mgmt-1 ]; then cd /Volumes/mgmt-1/deploy/resin_dev_1; else cd /Volumes/mgmt/deploy/resin_dev_1; fi"
-#alias rs0="if [ -d /Volumes/mgmt-1 ]; then cd /Volumes/mgmt-1/deploy/resin_staging_0; else cd /Volumes/mgmt/deploy/resin_staging_0; fi"
-#alias rp0="cd /Volumes/MSIS/MSIS-Argus/MSIS\ Transfer/WAR\ Transfer/resin_prod0;"
-
-alias resintest="ssh acumen || echo 'Must be running f5.sh vpn to succeed'"
-alias resinstaging="ssh martin || echo 'Must be running f5.sh vpn to succeed'"
-alias sthuban="ssh thuban || echo 'Must be running f5.sh vpn to succeed'"
-alias smenkar="ssh menkar || echo 'Must be running f5.sh vpn to succeed'"
-alias sgrus="ssh grus || echo 'Must be running f5.sh vpn to succeed'"
-
-#tomcat
-alias stomcat="ssh tomcat1-test"
-alias stest="ssh tomcat1-test"
-alias sstaging="ssh tomcat1-staging"
-alias sprod="ssh tomcat1-prod"
-
-
-alias tsd="/usr/local/opt/tomcat/libexec/bin/shutdown.sh -force"
-alias tsu="/usr/local/opt/tomcat/libexec/bin/startup.sh"
-alias tsr="tsd && tsu"
-alias debug="tsd || true && /usr/local/opt/tomcat/libexec/bin/catalina.sh jpda start"
-alias gojs="cd ~/Documents/js"
-alias goweb="cd ~/Documents/git/assessment_services/web/src/main/webapp/WEB-INF"
+load_aliases
 
 #MongoDB
 alias startmongo="mongod --config /usr/local/etc/mongod.conf"

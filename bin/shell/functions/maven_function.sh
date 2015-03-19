@@ -13,21 +13,6 @@ TIER=dev
 
 #!/bin/bash
 
-function gogit() {
-  echo "Changing to git directory..."
-  cd ~/Documents/git
-}
-
-function gosvn() {
-  echo "Changing to svn directory..."
-  cd ~/Documents/svn
-}
-
-function golog() {
-  echo "Changing to Tomcat log directory..."
-  cd /usr/local/opt/tomcat/libexec/logs
-}
-
 function mvnci()
 {
   mci
