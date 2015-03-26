@@ -11,8 +11,14 @@ function setjdk() {
      fi
     export JAVA_HOME=$(/usr/libexec/java_home -v "$@")
     export PATH=$JAVA_HOME/bin:$PATH
+  else
+    echo "No argument (i.e. java version e.g. 1.7) specified"
   fi
 }
 function removeJavaFromPath() {
-  export PATH="$(echo "$PATH" | sed -E -e "s;:$1;;" -e "s;$1:?;;")"
+  if [ $# -ne 0 ]; then
+    export PATH="$(echo "$PATH" | sed -E -e "s;:$1;;" -e "s;$1:?;;")"
+  else
+    echo "No argument (java path) specified"
+  fi
 }
