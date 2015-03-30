@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 echo "Installing Atom and popular packages"
 brew cask install atom
 apm install Atom-Syntax-highlighting-for-Sass

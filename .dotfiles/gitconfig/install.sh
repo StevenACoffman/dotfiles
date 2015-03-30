@@ -2,14 +2,17 @@
 # This will set up Git config defaults. Assumes you already installed XCode and your diff and merge tools.
 
 # If you run this, it will overwrite some existing values.
+USER_SHORTNAME="$(whoami)"
+#USER_FULLNAME=""
+USER_FULLNAME="$(finger $(whoami) | awk -F: '{ print $3 }' | head -n1 | sed 's/^ //')"
 
 if [ ! -f ~/.ssh/id_rsa ]; then
-  ssh-keygen -t rsa -C "$(whoami)@umich.edu"
+  ssh-keygen -t rsa -C "${USER_SHORTNAME}@umich.edu"
   chmod 700 ~
   chmod 700 ~/.ssh
   chmod 700 ~/.ssh/id_rsa
   # start the ssh-agent in the background
-#  eval "$(ssh-agent -s)"
+  eval "$(ssh-agent -s)"
   ssh-add -K
 # Copies the contents of the id_rsa.pub file to your clipboard
 pbcopy < ~/.ssh/id_rsa.pub
@@ -20,13 +23,13 @@ fi
 # if user.name is empty, then add an user.name
 if [[ -z "$(git config --global --get user.name)" ]]
 then
-  git config --global user.name "Steve Coffman"
+  git config --global user.name "${USER_FULLNAME}"
 fi
 
 # if user.email is empty, then add an email
 if [[ -z "$(git config --global --get user.email)" ]]
 then
-    git config --global user.email "gears@umich.edu"
+    git config --global user.email "${USER_SHORTNAME}@umich.edu"
 fi
 
 # if github.user is empty, then add a github.user
@@ -54,6 +57,8 @@ git config --global color.ui true
 
 # Most people have XCode installed
 if hash opendiff 2> /dev/null; then
+  echo "You don't have XCode installed?"
+else
   echo "Setting XCode OpenDiff (FileMerge) as diff and merge tool"
   #Opendiff (FileMerge) to resolve merge conflicts:
   git config --global merge.tool opendiff
@@ -65,6 +70,8 @@ fi
 
 # Some people like kdiff3
 if hash kdiff3 2>/dev/null; then
+  echo "You don't have kdiff3 installed (that's normal)"
+else
   git config --global diff.tool kdiff3
   git config --global difftool.kdiff3 trustExitCode true
   git config --global merge.tool kdiff3
@@ -73,6 +80,8 @@ fi
 
 #Beyond Compare rocks
 if hash bcomp 2>/dev/null; then
+  echo "You don't have beyond compare installed (it's great, btw)"
+else
   echo "Setting Beyond Compare as diff and merge tool"
   git config --global difftool.prompt false
   git config --global diff.tool bc
@@ -96,11 +105,15 @@ git config --global mergetool.keepBackup false
 git config --global difftool.prompt false
 
 if hash edit 2>/dev/null; then
+  echo "You do not have text wranger installed (that's ok)"
+else
   #TextWrangler as the default editor
   git config --global core.editor "edit -w"
 fi
 
 if hash mate 2>/dev/null; then
+  echo "You do not have textmate installed (that's sad)"
+else
   #TextMate as the default editor
   git config --global core.editor "mate -w"
 fi
@@ -164,6 +177,8 @@ then
 #  git config --global alias.dcs "!git diff --staged | cdiff -s"
 #  git config --global alias.cp "cherry-pick"
 if hash legit 2>/dev/null; then
+  echo "You do not have legit installed"
+else
   legit install
 fi
 #  git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"

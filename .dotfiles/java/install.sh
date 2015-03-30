@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Installing Java stuff"
-
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 #Install Java
 if [ ! -d "/opt/homebrew-cask/Caskroom/java" ]; then
@@ -39,5 +39,5 @@ if [ -z "$(brew ls --versions subversion)" ]
 then
   brew install --with-java subversion
 fi
-
+wget http://projectlombok.org/downloads/lombok.jar -O "/Users/$(whoami)/Downloads"
 exit 0

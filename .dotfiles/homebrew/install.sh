@@ -5,9 +5,12 @@
 # This installs some of the common dependencies needed (or at least desired)
 # using Homebrew.
 
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 # Check for Homebrew
 if hash brew 2>/dev/null
 then
+  echo "  Homebrew is already installed"
+else
   echo "  Installing Homebrew for you."
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
