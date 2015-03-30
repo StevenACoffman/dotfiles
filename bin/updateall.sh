@@ -71,10 +71,12 @@ if hash npm 2>/dev/null; then
   for package in $(sudo npm -g outdated --parseable --depth=0 | cut -d: -f2)
   do
     echo "Installing npm package $package"
-    sudo npm -g install "$package"
+    npm -g install "$package"
   done
-  #echo "sudo n latest"
-  #sudo n latest
+  echo "using n to set io.js (node) to latest"
+  #n io latest
+  #use node (not iojs)
+  #n latest
 fi
 echo "softwareupdate"
 sudo softwareupdate -i -a

@@ -17,6 +17,7 @@ export JBOSS_HOME=/usr/local/opt/jboss-as/libexec
 export SONAR_RUNNER_HOME=/usr/local/opt/sonar-runner/libexec
 export NODE_PATH="/usr/local/lib/node_modules"
 export PYTHONPATH="/usr/local/lib/python2.7/site-packages:$PYTHONPATH"
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 # Ignore duplicate commands in the history
 export HISTCONTROL=ignoredups
