@@ -13,7 +13,7 @@ if [ ! -d "/opt/homebrew-cask/Caskroom/eclipse" ]; then
 # Control will enter here if $PACKAGE doesn't exist.
 #echo $PACKAGE was not installed with cask
   if [ ! -n "$(find /Applications -maxdepth 1 -iname "eclipse*")" ]; then
-    brew cask install eclipse
+    brew cask install eclipse-jee
   fi
 fi
 
