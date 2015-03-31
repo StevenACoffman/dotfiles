@@ -22,8 +22,14 @@ fail () {
   exit
 }
 
-setup_ssh () {
+install_git () {
+  if [ -z "$(brew ls --versions git)" ]
+  then
+    brew install git
+  fi
+}
 
+setup_ssh () {
   if [ ! -f ~/.ssh/id_rsa ]; then
     ssh-keygen -t rsa -C "${USER_SHORTNAME}@umich.edu"
     chmod 700 ~
@@ -60,7 +66,12 @@ setup_gitconfig () {
   then
     user ' - What is your github user id?'
     read -e github_userid
-    git config --global github.user "$github_userid"
+    if [[ -n "$github_userid" ]]
+    then
+      git config --global github.user "$github_userid"
+    else
+      info "Skipping setting github user (might cause cask problems)"
+    fi
   fi
 
   # yeah, not going to commit my token here.
@@ -194,25 +205,27 @@ setup_gitconfig () {
     git config --global alias.ci commit
     git config --global alias.br branch
 
-  #  git config --global alias.d difftool
-  #  git config --global alias.h help
-  #  git config --global alias.sub submodule
-  #  git config --global alias.dst "diff --staged"
-  #  git config --global alias.dc "!git diff | cdiff -s"
-  #  git config --global alias.dcs "!git diff --staged | cdiff -s"
-  #  git config --global alias.cp "cherry-pick"
-  if hash legit 2>/dev/null; then
-    info "You do not have legit installed (and that is ok)"
-  else
-    legit install
-  fi
-  #  git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
-    # This only works if the alias section is at the end.
-    #cat ./git_aliases.txt >> ~/.gitconfig
+    #  git config --global alias.d difftool
+    #  git config --global alias.h help
+    #  git config --global alias.sub submodule
+    #  git config --global alias.dst "diff --staged"
+    #  git config --global alias.dc "!git diff | cdiff -s"
+    #  git config --global alias.dcs "!git diff --staged | cdiff -s"
+    #  git config --global alias.cp "cherry-pick"
+    if hash legit 2>/dev/null; then
+      info "You do not have legit installed (and that is ok)"
+    else
+      legit install
+    fi
+    #  git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+      # This only works if the alias section is at the end.
+      #cat ./git_aliases.txt >> ~/.gitconfig
   fi
   ## Git Legit: You did install git legit, right?
   # More info: http://www.git-legit.org/
   # pip install https://github.com/kennethreitz/legit/zipball/master
 }
+
 setup_ssh
+install_git
 setup_gitconfig
