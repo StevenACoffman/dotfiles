@@ -2,7 +2,12 @@
 
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 echo "Installing Atom and popular packages"
-brew cask install atom
+if [ ! -d "/opt/homebrew-cask/Caskroom/atom" ]; then
+  if [ ! -n "$(find /Applications -maxdepth 1 -iname "Atom.app")" ]; then
+    brew cask install atom
+  fi
+fi
+
 apm install Atom-Syntax-highlighting-for-Sass
 apm install Zen
 apm install ask-stack
