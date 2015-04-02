@@ -41,7 +41,6 @@ function update_git_repos {
       echo "";
 
       CURRENT_GIT_DIR="$(dirname "$CURRENT_DOT_GIT_DIR")"
-      #echo -e "\033[33m" "$CURRENT_GIT_DIR Clean so pulling" "\033[0m";
 
       # We have to go to the .git parent directory to call the pull command
       cd "$CURRENT_GIT_DIR";
@@ -49,17 +48,18 @@ function update_git_repos {
       #if [ -n "$(git diff --shortstat 2> /dev/null | tail -n1)" ]
       if is_git_dirty
       then
-      echo -e "${ORANGE}$CURRENT_GIT_DIR is ${RED}Dirty${ORANGE} so fetching${NO_COLOR}";
-      #git fetch
+
+        echo -e "${ORANGE}$CURRENT_GIT_DIR is ${RED}Dirty${ORANGE} so fetching${NO_COLOR}";
+        git fetch
 
       else
         echo -e "${LIGHT_PURPLE}$CURRENT_GIT_DIR is ${LIGHT_BLUE}Clean${LIGHT_PURPLE} so pulling${NO_COLOR}";
-        #git pull origin master > /dev/null 2>&1
+        git pull origin master > /dev/null 2>&1
         #Should never happen, but just in case
         if [ $? -ne 0 ]
         then
           echo -e "${RED}Merge failed for ${WHITE}$CURRENT_GIT_DIR${WHITE} so aborting${NO_COLOR}"
-          #git merge --abort
+          git merge --abort
         fi
       fi
       # lets get back to the CUR_DIR
