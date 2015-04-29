@@ -40,4 +40,5 @@ then
   brew install --with-java subversion
 fi
 wget http://projectlombok.org/downloads/lombok.jar -O "/Users/$(whoami)/Downloads"
+echo "You will need to install lombok"
 exit 0

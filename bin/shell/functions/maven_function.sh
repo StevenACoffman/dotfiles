@@ -10,6 +10,7 @@
 
 #TIER=test
 TIER=dev
+GIT_ROOT_DIR=~/Documents/git
 
 #!/bin/bash
 
@@ -47,7 +48,7 @@ function redeployTomcat() {
 	cwd_top=${PWD##*/}
 	echo "Redeploying from directory ${cwd_top} for tier ${TIER}"
 	if [ "$cwd_top" = 'web' ]; then
-        mvn -DskipTests=true -Denv=${TIER} -Ddatabase=${TIER} -Djetty.skip=true -Dmaven.install.skip=true tomcat7:redeploy
+        mvn -Dmaven.test.skip=true -DskipTests=true -Denv=${TIER} -Ddatabase=${TIER} -Djetty.skip=true -Dmaven.install.skip=true tomcat7:redeploy
 	else
 		if [ "$cwd_top" = "alias" -o "$cwd_top" = "assessment_services" -o "$cwd_top" = "assessment_framework" -o "$cwd_top" = "coreservices" ]; then
 			cd web
@@ -59,24 +60,24 @@ function redeployTomcat() {
 
 function redeployTomcatAll() {
 	old_cwd=${PWD}
-	cd ~/Documents/git/alias && \
+	cd ${GIT_ROOT_DIR}/alias && \
 	redeployTomcat && \
-	cd ~/Documents/git/coreservices && \
+	cd ${GIT_ROOT_DIR}/coreservices && \
 	redeployTomcat && \
-	cd ~/Documents/git/assessment_framework && \
+	cd ${GIT_ROOT_DIR}/assessment_framework && \
 	redeployTomcat && \
-	cd ~/Documents/git/assessment_services && \
+	cd ${GIT_ROOT_DIR}/assessment_services && \
 	redeployTomcat && \
 	cd "$old_cwd"
 }
 function reliquibase() {
 	old_cwd=${PWD}
 	echo "Running Liquibase for Assessment Framework for tier ${TIER}"
-	#cd ~/Documents/git/coreservices/liquibase
+	#cd ${GIT_ROOT_DIR}/coreservices/liquibase
 	#mvn liquibase:update -Ddatabase=dev
-	cd ~/Documents/git/assessment_framework/liquibase
+	cd ${GIT_ROOT_DIR}/assessment_framework/liquibase
 	mvn liquibase:update -Ddatabase=${TIER}
-	#cd ~/Documents/git/assessment_services/liquibase
+	#cd ${GIT_ROOT_DIR}/assessment_services/liquibase
 	#mvn liquibase:update -Ddatabase=dev
 	cd "$old_cwd"
 }
@@ -87,32 +88,32 @@ function mavenCleanInstall() {
 function mavenCleanInstallAll() {
 	reliquibase
 	old_cwd=${PWD}
-	cd ~/Documents/git/alias && \
+	cd ${GIT_ROOT_DIR}/alias && \
 	mavenCleanInstall && \
-	cd ~/Documents/git/coreservices && \
+	cd ${GIT_ROOT_DIR}/coreservices && \
 	mavenCleanInstall && \
-	cd ~/Documents/git/assessment_framework && \
+	cd ${GIT_ROOT_DIR}/assessment_framework && \
 	mavenCleanInstall && \
-	cd ~/Documents/git/assessment_services && \
+	cd ${GIT_ROOT_DIR}/assessment_services && \
 	mavenCleanInstall && \
 	cd "$old_cwd" && \
 	popupWarning 'Maven Clean Install Complete'
 }
 function noTestsBuild() {
 	echo "Running no tests build for tier ${TIER}"
-	mvn -Denv=${TIER} -Ddatabase=${TIER} -DskipTests=true -Djetty.skip=true clean install && redeployTomcat
+	mvn -Denv=${TIER} -Ddatabase=${TIER} -DskipITs=true -Djetty.skip=true clean install && redeployTomcat
 }
 function noTestsBuildAll() {
 	reliquibase
 	old_cwd=${PWD}
 	echo "Old directory is ${old_cwd}"
-	cd ~/Documents/git/alias && \
+	cd ${GIT_ROOT_DIR}/alias && \
 		noTestsBuild && \
-		cd ~/Documents/git/coreservices && \
+		cd ${GIT_ROOT_DIR}/coreservices && \
 		noTestsBuild && \
-		cd ~/Documents/git/assessment_framework && \
+		cd ${GIT_ROOT_DIR}/assessment_framework && \
 		noTestsBuild && \
-		cd ~/Documents/git/assessment_services && \
+		cd ${GIT_ROOT_DIR}/assessment_services && \
 		noTestsBuild && \
 		echo "$old_cwd" && \
 		cd "$old_cwd" && \
@@ -122,8 +123,8 @@ function doESS() {
   PWD=$(pwd)
   echo "starting in $PWD"
   cd ~
-  buildDir="Documents/git/examscore"
-  cd ~/"$buildDir"
+  buildDir="${GIT_ROOT_DIR}/examscore"
+  cd "$buildDir"
   rm -r -f target
   mvn clean package
   cd target
@@ -158,6 +159,31 @@ end tell
 EOT
 }
 
+function csntb() {
+  cd "${GIT_ROOT_DIR}/coreservices"
+  noTestsBuild
+}
+function afntb() {
+  cd "${GIT_ROOT_DIR}/assessment_framework"
+  noTestsBuild
+}
+function asntb() {
+  cd "${GIT_ROOT_DIR}/assessment_services"
+  noTestsBuild
+}
+
+function csmci() {
+  cd "${GIT_ROOT_DIR}/coreservices"
+  mavenCleanInstall
+}
+function afmci() {
+  cd "${GIT_ROOT_DIR}/assessment_framework"
+  mavenCleanInstall
+}
+function asmci() {
+  cd "${GIT_ROOT_DIR}/assessment_services"
+  mavenCleanInstall
+}
 docker-ip() {
   boot2docker ip 2> /dev/null
 }

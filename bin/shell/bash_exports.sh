@@ -6,7 +6,7 @@
 export EDITOR="mate --wait"
 
 # Set Java to a nice reasonable version
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
 #export JAVA_HOME='/System/Library/Frameworks/JavaVM.framework/Home'
 
 #Possibly Problematic next line:

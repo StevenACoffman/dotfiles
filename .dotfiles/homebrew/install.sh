@@ -30,7 +30,7 @@ then
 fi
 
 # Install applications
-for PACKAGE in atom textmate beyond-compare skype google-chrome firefox sourcetree screenhero keka sublime-text anki tunnelbear vlc stellarium; do
+for PACKAGE in atom textmate imageoptim beyond-compare skype google-chrome firefox sourcetree screenhero keka sublime-text anki tunnelbear vlc stellarium; do
   if [ ! -d "/opt/homebrew-cask/Caskroom/$PACKAGE" ]; then
   # Control will enter here if $PACKAGE doesn't exist.
   APPNAME="$(echo $PACKAGE|tr '-' ' ').app"
