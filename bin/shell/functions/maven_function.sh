@@ -13,6 +13,29 @@ TIER=dev
 GIT_ROOT_DIR=~/Documents/git
 
 #!/bin/bash
+function cleanLiquibaseProperties() {
+  old_cwd=${PWD}
+  cd "$GIT_ROOT_DIR/assessment_services"
+  git checkout -- liquibase/liquibase.dev.properties
+  cd "$GIT_ROOT_DIR/assessment_framework"
+  git checkout -- liquibase/liquibase.dev.properties
+  cd "$old_cwd"
+}
+function restoreLiquibaseProperties() {
+  cp ~/.amadeus/liquibase.dev.properties "$GIT_ROOT_DIR/assessment_services/liquibase/liquibase.dev.properties"
+  cp ~/.amadeus/liquibase.dev.properties "$GIT_ROOT_DIR/assessment_framework/liquibase/liquibase.dev.properties"
+}
+function releaseLocks() {
+  restoreLiquibaseProperties
+  old_cwd=${PWD}
+  cd "$GIT_ROOT_DIR/assessment_services/liquibase"
+  mvn -Denv=dev -Ddatabase=dev liquibase:releaseLocks
+  cd "$GIT_ROOT_DIR/assessment_framework"
+  mvn -Denv=dev -Ddatabase=dev liquibase:releaseLocks
+  cd "$old_cwd"
+  cleanLiquibaseProperties
+}
+
 
 function mvnci()
 {
@@ -73,20 +96,24 @@ function redeployTomcatAll() {
 function reliquibase() {
 	old_cwd=${PWD}
 	echo "Running Liquibase for Assessment Framework for tier ${TIER}"
+  restoreLiquibaseProperties
 	#cd ${GIT_ROOT_DIR}/coreservices/liquibase
 	#mvn liquibase:update -Ddatabase=dev
 	cd ${GIT_ROOT_DIR}/assessment_framework/liquibase
 	mvn liquibase:update -Ddatabase=${TIER}
-	#cd ${GIT_ROOT_DIR}/assessment_services/liquibase
-	#mvn liquibase:update -Ddatabase=dev
+	cd ${GIT_ROOT_DIR}/assessment_services/liquibase
+	mvn liquibase:update -Ddatabase=dev
+  cleanLiquibaseProperties
 	cd "$old_cwd"
 }
 function mavenCleanInstall() {
 	echo "Running maven clean install for tier ${TIER}"
+  restoreLiquibaseProperties
 	mvn -Denv=${TIER} -Ddatabase=${TIER} clean install && redeployTomcat
+  cleanLiquibaseProperties
 }
 function mavenCleanInstallAll() {
-	reliquibase
+  restoreLiquibaseProperties
 	old_cwd=${PWD}
 	cd ${GIT_ROOT_DIR}/alias && \
 	mavenCleanInstall && \
@@ -101,7 +128,9 @@ function mavenCleanInstallAll() {
 }
 function noTestsBuild() {
 	echo "Running no tests build for tier ${TIER}"
+  restoreLiquibaseProperties
 	mvn -Denv=${TIER} -Ddatabase=${TIER} -DskipITs=true -Djetty.skip=true clean install && redeployTomcat
+  cleanLiquibaseProperties
 }
 function noTestsBuildAll() {
 	reliquibase

@@ -193,13 +193,14 @@ dist
 
 ### SASS ###
 .sass-cache
-*.css.map
 .tmp
 
 ### ATOM ###
 .atom/packages
 .atom/storage
 .atom/.apm
+
+liquibase.dev.properties
 
 ### NOT SURE WHAT THIS IS FROM ###
 test-results.xml

@@ -7,7 +7,7 @@
     "max_preserve_newlines": 1,
     "preserve_newlines": true,
     "unformatted": ["a", "sub", "sup", "b", "i", "u"],
-    "wrap_line_length": 0
+    "wrap_line_length": 140
   },
   "css": {
     "indent_char": " ",
@@ -30,7 +30,7 @@
     "eval_code": false,
     "unescape_strings": false,
     "e4x": false,
-    "wrap_line_length": 120,
+    "wrap_line_length": 140,
     "indent_size": 2,
     "indent_char": " ",
     "indent_level": 0

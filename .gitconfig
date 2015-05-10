@@ -35,6 +35,7 @@
 	helper = osxkeychain
 [difftool "sourcetree"]
 	cmd = /usr/local/bin/bcomp -ro $LOCAL $REMOTE
+	path = 
 [mergetool "sourcetree"]
 	cmd = /usr/local/bcomp $LOCAL $REMOTE
 	trustExitCode = true
@@ -66,3 +67,4 @@
 	sync = !legit sync \"$@\"
 	publish = !legit publish \"$@\"
 	graft = !legit graft \"$@\"
+	aliases = --get-regexp

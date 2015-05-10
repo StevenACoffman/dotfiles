@@ -37,7 +37,7 @@ then
   echo "brew update"
   brew update
   echo "brew upgrade"
-  brew upgrade
+  brew upgrade --all
 fi
 
 TOMCAT_DIR="/usr/local/Cellar/tomcat"
