@@ -22,7 +22,18 @@
     disabledLanguages: [
       "GitHub Markdown"
     ]
-    beautifyOnSave: true
+    beautifyOnSave: false
+    language_css_beautify_on_save: true
+    language_csv_beautify_on_save: true
+    language_html_beautify_on_save: true
+    language_js_beautify_on_save: true
+    language_xml_beautify_on_save: true
+    language_json_beautify_on_save: true
+    language_jsx_beautify_on_save: true
+    language_ruby_beautify_on_save: true
+    language_scss_beautify_on_save: true
+    language_sass_beautify_on_save: true
+    language_sql_beautify_on_save: true
   linter:
     lintOnChange: false
     statusBar: "Show all errors"
@@ -44,9 +55,13 @@
   "linter-jsxhint":
     use_6to5_transform: true
   "autocomplete-plus": {}
-".coffee.jsx.source":
+  "linter-xmllint":
+    xmllintExecutablePath: "/usr/bin/xmllint"
+  "linter-tidy": {}
+  "atom-ternjs": {}
+".js.jsx.source":
   editor:
     preferredLineLength: 120
-".js.jsx.source":
+".coffee.jsx.source":
   editor:
     preferredLineLength: 120

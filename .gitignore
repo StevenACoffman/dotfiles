@@ -85,7 +85,7 @@ overlays*
 *.pydevproject
 .metadata
 .gradle
-bin/**
+git/**/bin/**
 tmp/**
 tmp/**/*
 *.tmp

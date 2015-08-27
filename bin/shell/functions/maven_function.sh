@@ -30,7 +30,7 @@ function releaseLocks() {
   old_cwd=${PWD}
   cd "$GIT_ROOT_DIR/assessment_services/liquibase"
   mvn -Denv=dev -Ddatabase=dev liquibase:releaseLocks
-  cd "$GIT_ROOT_DIR/assessment_framework"
+  cd "$GIT_ROOT_DIR/assessment_framework/liquibase"
   mvn -Denv=dev -Ddatabase=dev liquibase:releaseLocks
   cd "$old_cwd"
   cleanLiquibaseProperties
@@ -187,7 +187,18 @@ tell application "System Events"
 end tell
 EOT
 }
-
+function csrdp() {
+  cd "${GIT_ROOT_DIR}/coreservices"
+  redeployTomcat
+}
+function afrdp() {
+  cd "${GIT_ROOT_DIR}/assessment_framework"
+  redeployTomcat
+}
+function asrdp() {
+  cd "${GIT_ROOT_DIR}/assessment_services"
+  redeployTomcat
+}
 function csntb() {
   cd "${GIT_ROOT_DIR}/coreservices"
   noTestsBuild

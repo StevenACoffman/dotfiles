@@ -74,9 +74,11 @@ if hash npm 2>/dev/null; then
     npm -g install "$package"
   done
   echo "using n to set io.js (node) to latest"
-  n io latest
-  #use node (not iojs)
-  #n latest
+  #use iojs latest (not node):
+  #n io latest
+  
+  #use node (not iojs):
+  n node latest
 fi
 echo "softwareupdate"
 sudo softwareupdate -i -a

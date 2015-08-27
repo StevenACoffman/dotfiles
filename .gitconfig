@@ -47,12 +47,12 @@
 	required = true
 [rerere]
 	enabled = true
-[branch]
-	autosetuprebase = always
-[pull]
-	rebase = true
-[url "ssh://git@github.com/"]
-	insteadOf = https://github.com/
+#[branch]
+#	autosetuprebase = always
+#[pull]
+#	rebase = true
+# [url "ssh://git@github.com/"]
+#	insteadOf = https://github.com/
 [alias]
 	unstage = reset HEAD --
 	unstash = stash pop
