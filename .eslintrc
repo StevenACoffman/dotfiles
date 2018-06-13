@@ -1,0 +1,11 @@
+{
+    "extends": "react-app",
+    "prettier/prettier": [
+        "error",
+        {
+            "trailingComma": "all",
+            "singleQuote": true,
+            "printWidth": 120
+        }
+    ]
+}

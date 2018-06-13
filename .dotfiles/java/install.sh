@@ -17,6 +17,9 @@ if [ ! -d "/opt/homebrew-cask/Caskroom/eclipse" ]; then
   fi
 fi
 
+#brew cask install caskroom/homebrew-versions/java6
+#brew cask install caskroom/versions/java7
+
 # Install IntelliJ
 if [ ! -d "/opt/homebrew-cask/Caskroom/intellij-idea" ]; then
 # Control will enter here if $PACKAGE doesn't exist.

@@ -38,9 +38,9 @@ vcsh dotfiles remote add origin https://github.com/StevenACoffman/dotfiles.git
 vcsh dotfiles pull origin master
 ```
 
-# Mac OS X 10.9 Mavericks
+# Mac OS X 10.10 Yosemite
 
-Custom recipe to get OS X 10.9 Mavericks running from scratch, setup applications and developer environment. I use this gist to keep track of the important software and steps required to have a functioning system after a semi-annual fresh install.
+Custom recipe to get OS X 10.10 Yosemite running from scratch, setup applications and developer environment. I use this gist to keep track of the important software and steps required to have a functioning system after a semi-annual fresh install.
 
 ## Install Software
 
@@ -64,6 +64,12 @@ xcode-select --install
 * [WiFi Signal](https://itunes.apple.com/us/app/wifi-signal/id525912054?mt=12&uo=4)
 * [Todoist](https://itunes.apple.com/us/app/todoist-to-do-list-task-list/id585829637?mt=12&uo=4)
 * [Xcode](https://itunes.apple.com/us/app/xcode/id497799835?mt=12&uo=4)
+* [MousePose](https://itunes.apple.com/us/app/mousepose/id405904955?mt=12) 
+* WunderList - been meaning to try it
+* EverNote - yep
+* iBoostUp - meh
+* PomodoroTodo
+
 
 ### Install from Third-Party Websites
 
@@ -85,6 +91,7 @@ xcode-select --install
   * [Quicksilver](http://qsapp.com)
   * [Skype](http://www.skype.com/en/download-skype/skype-for-computer/)
 	* [Transmit](http://panic.com/transmit)
+  * Alfred (installed via Cask)
 
 #Xcode Command Line Tools
 
@@ -283,7 +290,7 @@ git config --global color.ui true
 * Install Command Line Tools:
 `SourceTree > Install Command Line Tools`
 
-# Atom
+# Atom (this list is out of date, see .dotfiles scripts)
 * Install Linter (linter-jscs, linter-jshint, linter-shellcheck, linter-scss, linter-htmlhint )
 * Install atom-beautify
 * Install fixmyjs package
@@ -293,7 +300,7 @@ git config --global color.ui true
 * Install project-manager
 
 
-# Sublime Text
+## Sublime Text
 
 Add Sublime Text CLI
 --------------------
@@ -301,6 +308,10 @@ Add Sublime Text CLI
 ```bash
 mkdir -p ~/bin && ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ~/bin/subl
 ```
+## Firefox extensions
+* Sage
+* Saved Password editor
+* ShareMeNot
 
 ## Chrome
 * install postman
@@ -311,6 +322,8 @@ mkdir -p ~/bin && ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/b
 * install colorzilla
 * install ruul
 * install perfect pixel
+* install page load timer
+* install WAVE Evaluation Tool
 
 ## Tomcat
 * bin/setenv.sh

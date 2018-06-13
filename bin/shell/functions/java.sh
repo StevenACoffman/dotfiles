@@ -22,3 +22,15 @@ function removeJavaFromPath() {
     echo "No argument (java path) specified"
   fi
 }
+
+
+get_healthy() {
+  PORT=${1:-"8181"}
+  HOSTNAME=${2:"localhost"}
+  curl -s -H "Accept: application/json" -H "Content-Type: application/json" -X GET "http://${HOSTNAME}:${PORT}/healthcheck" 2> /dev/null
+  if [ $? -eq 0 ]; then
+    osascript -e 'display notification "Heathcheck Passed. Get Going!" with title "Healthcheck Done"'
+  else
+    osascript -e 'display notification "Heathcheck Failed. Get Fixing!" with title "Healthcheck Done"'
+  fi
+}

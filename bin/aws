@@ -1,0 +1,26 @@
+#!/bin/bash
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+
+if [ -n "$(type -t pyenv)" ] && [ "$(type -t pyenv)" = function ]; then
+#    echo "pyenv is already initialized"
+    OLD_VIRTUALENV=${VIRTUAL_ENV##*/}
+else
+    if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+    if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+fi
+#pyenv virtualenv 3.5.1 pyenv activate aws
+pyenv activate aws
+# if aws-vault not working, then use next line instead
+aws "$@"
+RETURN_VALUE="$?"
+#set -euo pipefail
+#echo "$@"
+#AWS_PROFILE="${AWS_DEFAULT_PROFILE:-kops}"
+#exec aws-vault exec "$AWS_PROFILE" -- aws "$@"
+
+#Restore old virtualenv
+if [[ -n "${OLD_VIRTUALENV}" ]]
+then
+    pyenv activate "$OLD_VIRTUALENV"
+fi
+exit $RETURN_VALUE

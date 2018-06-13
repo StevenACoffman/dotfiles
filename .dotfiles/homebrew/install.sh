@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Homebrew
 #
@@ -18,19 +18,51 @@ fi
 # Install homebrew packages
 #brew install grc coreutils spark
 
-for PACKAGE in git curl lynx mongodb pandoc phantomjs redis shellcheck springboot ssh-copy-id wget; do
+for PACKAGE in \
+git \
+curl \
+lynx \
+mas \
+pandoc \
+redis \
+shellcheck \
+springboot \
+ssh-copy-id \
+uncrustify \
+wget \
+watchman; do
   if [ -z "$(brew ls --versions $PACKAGE)" ]
   then
     brew install $PACKAGE
   fi
 done
-if [ -z "$(brew ls --versions brew-cask)" ]
+if ! brew info brew-cask &>/dev/null
 then
-  brew install caskroom/cask/brew-cask
+  brew tap homebrew/cask
+  brew tap buo/cask-upgrade
 fi
 
 # Install applications
-for PACKAGE in atom textmate imageoptim beyond-compare skype google-chrome firefox sourcetree screenhero keka sublime-text anki tunnelbear vlc stellarium; do
+for PACKAGE in \
+alfred \
+anki \
+atom \
+beyond-compare \
+caffeine \
+firefox \
+google-chrome \
+imageoptim \
+keka \
+lastpass \
+screenhero \
+skype \
+sourcetree \
+stellarium\
+sublime-text \
+textmate \
+tunnelbear \
+vlc \
+; do
   if [ ! -d "/opt/homebrew-cask/Caskroom/$PACKAGE" ]; then
   # Control will enter here if $PACKAGE doesn't exist.
   APPNAME="$(echo $PACKAGE|tr '-' ' ').app"
@@ -51,7 +83,14 @@ fi
 
 # Install developer Fonts
 brew tap caskroom/fonts
-for PACKAGE in font-inconsolata font-source-code-pro font-open-sans font-dejavu-sans; do
+for PACKAGE in \
+font-monoid \
+font-fira-code \
+font-inconsolata \
+font-source-code-pro \
+font-open-sans \
+font-dejavu-sans \
+; do
   if [ ! -d "/opt/homebrew-cask/Caskroom/$PACKAGE" ]; then
     brew cask install $PACKAGE
   fi

@@ -35,7 +35,6 @@ apm install linter-shellcheck
 apm install merge-conflicts
 apm install project-manager
 apm install react
-apm install refactor
 apm install regex-railroad-diagram
 apm install script
 apm install sort-lines

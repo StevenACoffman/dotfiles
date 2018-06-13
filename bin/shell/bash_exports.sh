@@ -6,17 +6,21 @@
 export EDITOR="mate --wait"
 
 # Set Java to a nice reasonable version
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
-#export JAVA_HOME='/System/Library/Frameworks/JavaVM.framework/Home'
 
+JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+export JAVA_HOME
+#export JAVA_HOME='/System/Library/Frameworks/JavaVM.framework/Home'
+export GOPATH=$HOME/go
 #Possibly Problematic next line:
-export ANT_HOME=/usr/share/ant
+export ANT_HOME=/usr/local/opt/ant/libexec
 export MAVEN_HOME=/usr/local/opt/maven/libexec
 export MAVEN_OPTS='-Xms256m -XX:MaxPermSize=1024m -Xmx1024m'
 export JBOSS_HOME=/usr/local/opt/jboss-as/libexec
 export SONAR_RUNNER_HOME=/usr/local/opt/sonar-runner/libexec
 export NODE_PATH="/usr/local/lib/node_modules"
-export PYTHONPATH="/usr/local/lib/python2.7/site-packages:$PYTHONPATH"
+export PYENV_ROOT=/usr/local/var/pyenv
+export SCALA_HOME=/usr/local/opt/scala
+#export PYTHONPATH="/usr/local/opt/pypy3/libexec/site-packages:$PYTHONPATH"
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 # Ignore duplicate commands in the history
@@ -35,8 +39,15 @@ export MANPAGER="less -X"
 
 # Export PhantomJS bin location (be explicit in case Homebrew is not installed
 # in the default location)
-export PHANTOMJS_BIN="$(brew --prefix)/bin/phantomjs"
+PHANTOMJS_BIN="$(brew --prefix)/bin/phantomjs"
+export PHANTOMJS_BIN
 
 # Make new shells get the history lines from all previous
 # shells instead of the default "last window closed" history
 export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+
+#Set shell to have reasonable limits, see http://docs.basho.com/riak/latest/ops/tuning/open-files-limit/#Mac-OS-X
+ulimit -n 65536
+ulimit -u 2048
+
+source "$HOME/secret/secret_exports.sh"

@@ -15,3 +15,15 @@
 #    complete_func=_git_$(__git_aliased_command $al)
 #    function_exists $complete_fnc && __git_complete g$al $complete_func
 #done
+
+BASH_COMPLETION_DIR="${HOME}/bin/shell/completions"
+BASH_COMPLETION_COMPAT_DIR="${HOME}/bin/shell/completions"
+
+if [ -f "$(brew --prefix)/etc/bash_completion" ] && ! shopt -oq posix; then
+    source "$(brew --prefix)/etc/bash_completion"
+fi
+
+#Verify we have installed dependencies
+if hash kubectl 2>/dev/null; then
+    source <(kubectl completion bash)
+fi

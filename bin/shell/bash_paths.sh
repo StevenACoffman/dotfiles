@@ -10,15 +10,21 @@ declare -a dirs_to_prepend=(
 
 # Directories to be appended to PATH
 declare -a dirs_to_append=(
-
+   "$JAVA_HOME/bin"
     "/usr/bin"
     "$HOME/bin"
     "$HOME/bin/git"
     "$HOME/bin/ssh"
+    "$HOME/bin/ws"
     "$MAVEN_HOME/bin"
     "$HOME/.dotfiles/bin"
     "$HOME/.rbenv/shims"
     "$MAVEN_HOME/bin"
+    "$HOME/Documents/git/continuous-deployment/libexec"
+    "$HOME/tools/kafka/kafka_2.10-0.10.2.1/bin"
+    "/usr/local/opt/go/libexec/bin"
+    "$HOME/.cargo/bin"
+    "$GOPATH/bin"
 )
 
 # Prepend directories to PATH

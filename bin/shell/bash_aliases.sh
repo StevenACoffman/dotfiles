@@ -4,7 +4,7 @@
 
 # Allow aliases to be with sudo
 alias sudo="sudo "
-
+alias xcode='open -a /Applications/Xcode.app'
 # Easier navigation: .., ..., ~ and -
 alias ..="cd .."
 alias ...="cd ../.."

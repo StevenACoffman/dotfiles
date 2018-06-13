@@ -12,7 +12,62 @@
 TIER=dev
 GIT_ROOT_DIR=~/Documents/git
 
-#!/bin/bash
+function maven-graph-deps() {
+  #brew install graphviz
+  mvn org.kuali.maven.plugins:graph-maven-plugin:dependencies -Dgraph.includes=org.cirrostratus*,org.ithaka*
+  open target/graph/
+}
+
+function mylists() {
+#sagoku_region=us-east-1
+#sagoku_service=titlelist-service
+#servicelocator_ping=300
+#sagoku_hostname=localhost
+#AWS_ACCESS_KEY_ID=YOUR_KEY
+#DISABLE_LEGACY_SERVICE_LOCATOR=please
+#AWS_SECRET_KEY=YOUR_KEY
+#sagoku_domain=cirrostratus.org
+#sagoku_environment=test
+#sagoku_index=01
+export SGK_ENVIRONMENT=test
+export sagoku_service=my-lists
+export sagoku_index=01
+export sagoku_name=$sagoku_service$sagoku_index
+export sagoku_environment=test
+export sagoku_domain=cirrostratus.org
+export sagoku_hostname=$sagoku_service$sagoku_index.$sagoku_environment.$sagoku_domain
+export sagoku_region=us-east-1
+export servicelocator_ping=300
+export DISABLE_LEGACY_SERVICE_LOCATOR=true
+  cd /Users/scoffman/Documents/git/mylists-service || exit 1
+  mvn tomcat7:run -Dmaven.tomcat.port=8181 -Dsagoku_service=my-lists -Dsagoku_domain=cirrostratus.org -Dsagoku_environment=test -Dsagoku_index=99
+}
+
+function personalization-service() {
+#sagoku_region=us-east-1
+#sagoku_service=titlelist-service
+#servicelocator_ping=300
+#sagoku_hostname=localhost
+#AWS_ACCESS_KEY_ID=YOUR_KEY
+#DISABLE_LEGACY_SERVICE_LOCATOR=please
+#AWS_SECRET_KEY=YOUR_KEY
+#sagoku_domain=cirrostratus.org
+#sagoku_environment=test
+#sagoku_index=01
+  cd /Users/scoffman/Documents/git/personalization-service/iac-ucm || exit 1
+  mvn tomcat7:run -Dmaven.tomcat.port=8282 -Dsagoku_service=my-lists -Dsagoku_domain=cirrostratus.org -Dsagoku_environment=test -Dsagoku_index=99
+}
+
+
+
+function mvnt() {
+  # This makes maven generate reasonable html test reports
+  mvn test
+  mvn surefire-report:report-only
+  mvn site -DgenerateReports=false
+}
+
+
 function cleanLiquibaseProperties() {
   old_cwd=${PWD}
   cd "$GIT_ROOT_DIR/assessment_services"
@@ -148,37 +203,7 @@ function noTestsBuildAll() {
 		cd "$old_cwd" && \
 		popupWarning "Rebuild All Complete"
 }
-function doESS() {
-  PWD=$(pwd)
-  echo "starting in $PWD"
-  cd ~
-  buildDir="${GIT_ROOT_DIR}/examscore"
-  cd "$buildDir"
-  rm -r -f target
-  mvn clean package
-  cd target
-  warFileName=(*.war)
-  if [ ${#warFileName[@]} -ne 1 ]; then
-    echo "WARNING: More than one .war file found. Not sure which to deploy."
-    exit 1
-  elif [[ "${warFileName[0]}" == "*.war" ]]; then
-    echo "WARNING: No war files found. Not proceeding to deploy."
-    exit 1
-  fi
 
-
-  #Getting portion of filename preceding last dash e.g. medstat-1.3.2.war -> medstat
-  #WARNING an app with two dashes in the discarded portion may be wrong e.g. med-stat-1.3.4.war -> med-stat, medstat-1.3.2-b.war -> medstat-1.3.2
-
-  #Discard version (e.g. "-1.3.2.war")
-  appName="${warFileName[0]%.*}"
-  echo "$appName"
-  cd "$appName"
-  PWD=$(pwd)
-  echo "ending in $PWD"
-  #/usr/local/resin/bin/resin_funcs.sh startserver
-  #/usr/local/resin/bin/resin_funcs.sh serverlog
-}
 function popupWarning() {
 
 /usr/bin/osascript > /dev/null <<EOT
@@ -187,6 +212,7 @@ tell application "System Events"
 end tell
 EOT
 }
+
 function csrdp() {
   cd "${GIT_ROOT_DIR}/coreservices"
   redeployTomcat

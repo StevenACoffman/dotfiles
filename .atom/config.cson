@@ -1,67 +1,68 @@
 "*":
-  "exception-reporting":
-    userId: "172d991d-e303-49ff-c1ea-a27528a5fd97"
-  welcome:
-    showOnStartup: false
-  metrics:
-    userId: "c043c6661e0b2225a858c7e568ffa17fcdeb68a0"
-  editor:
-    fontFamily: "Source Code Pro"
-    showIndentGuide: true
-    preferredLineLength: 120
-    invisibles: {}
+  "activate-power-mode":
+    plugins:
+      playAudio: true
+      screenShake: true
+  "atom-beautify":
+    general:
+      _analyticsUserId: "0a400e8f-240c-4c26-864f-df5040ec25c7"
+    python:
+      default_beautifier: "yapf"
+  "autocomplete-python":
+    useKite: false
   core:
     disabledPackages: [
-      "atom-jshint"
-      "linter-htmlhint"
-      "linter-bootlint"
+      "linter-jscs"
+      "linter-jshint"
+      "kite"
+      "activate-power-mode"
     ]
-  "atom-beautify":
-    _analyticsUserId: "23d4c686-6cc4-47c2-80ee-a596dbed4987"
-    muteUnsupportedLanguageErrors: true
-    disabledLanguages: [
-      "GitHub Markdown"
-    ]
-    beautifyOnSave: false
-    language_css_beautify_on_save: true
-    language_csv_beautify_on_save: true
-    language_html_beautify_on_save: true
-    language_js_beautify_on_save: true
-    language_xml_beautify_on_save: true
-    language_json_beautify_on_save: true
-    language_jsx_beautify_on_save: true
-    language_ruby_beautify_on_save: true
-    language_scss_beautify_on_save: true
-    language_sass_beautify_on_save: true
-    language_sql_beautify_on_save: true
-  linter:
-    lintOnChange: false
-    statusBar: "Show all errors"
-    showInfoMessages: true
-  "atom-jshint":
-    hintOnModify: false
-    hintOnSave: false
-    showErrorPanel: false
-    watchConfig: false
-  "linter-jscs":
-    preset: "google"
-  "linter-shellcheck":
-    shellcheckExecutablePath: "/usr/local/bin"
-  fixmyjs:
-    legacy: false
-  "autoclose-html": {}
-  "linter-jshint": {}
-  react: {}
-  "linter-jsxhint":
-    use_6to5_transform: true
-  "autocomplete-plus": {}
-  "linter-xmllint":
-    xmllintExecutablePath: "/usr/bin/xmllint"
-  "linter-tidy": {}
-  "atom-ternjs": {}
-".js.jsx.source":
+    telemetryConsent: "limited"
   editor:
-    preferredLineLength: 120
+    fontSize: 16
+    showInvisibles: true
+    tabLength: 4
+    tabType: "soft"
+  "exception-reporting":
+    userId: "b9e61007-1fb3-1b0b-ac6f-31c147a59579"
+  "git-plus":
+    general:
+      _analyticsUserId: "1da7d240-94c7-49f9-a309-7300d0023b00"
+  kite:
+    showKiteTourOnStartup: false
+  linter: {}
+  "linter-eslint":
+    globalNodePath: "/Users/scoffman/.nvm/versions/node/v8.5.0"
+    useGlobalEslint: true
+  "linter-flake8":
+    executablePath: "/Users/scoffman/bin/flake8"
+  "linter-puppet-lint":
+    oldVersion: false
+  "linter-ui-default":
+    panelHeight: 69
+  "lisp-paredit":
+    strict: false
+  "prettier-atom":
+    prettierOptions:
+      singleQuote: true
+    useEditorConfig: false
+    useEslint: true
+  "proto-repl":
+    autoScroll: false
+  welcome:
+    showOnStartup: false
 ".coffee.jsx.source":
   editor:
     preferredLineLength: 120
+".erb.html.text":
+  editor:
+    preferredLineLength: 120
+".js.jsx.source":
+  editor:
+    preferredLineLength: 120
+".ruby.source":
+  editor:
+    preferredLineLength: 120
+".source.yaml":
+  editor:
+    tabLength: 2

@@ -1,8 +1,8 @@
 [user]
 	name = Steve Coffman
-	email = gears@umich.edu
+	email = steve.coffman@ithaka.org
 [core]
-	excludesfile = /Users/gears/.gitignore
+	excludesfile = /Users/scoffman/.gitignore
 	editor = mate -w
 	autocrlf = input
 	trustctime = false
@@ -10,34 +10,36 @@
 [color]
 	ui = true
 [diff]
-	tool = bc
+	tool = kdiff3
 [difftool]
 	prompt = false
 	opendiff = trustExitCode
 	bc = trustExitCode
+	kdiff3 = trustExitCode
+	kdiff3 = trustExitCode
 
 [difftool "bcomp"]
     trustExitCode = true
     cmd = "/usr/local/bin/bcomp" -ro "$LOCAL" "$REMOTE"
 [merge]
-	tool = bc
+	tool = kdiff3
 [mergetool]
     prompt = false
 	opendiff = trustExitCode
 	bc = trustExitCode
 	keepBackup = false
+	kdiff3 = trustExitCode
+	kdiff3 = trustExitCode
 [mergetool "bcomp"]
     trustExitCode = true
     cmd = "/usr/local/bin/bcomp" "$LOCAL" "$REMOTE" "$BASE" "$MERGED"
-[push]
-	default = upstream
 [credential]
 	helper = osxkeychain
 [difftool "sourcetree"]
-	cmd = /usr/local/bin/bcomp -ro $LOCAL $REMOTE
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
 [mergetool "sourcetree"]
-	cmd = /usr/local/bcomp $LOCAL $REMOTE
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 [github]
 	user = StevenACoffman
@@ -45,14 +47,7 @@
 	clean = git hawser clean %f
 	smudge = git hawser smudge %f
 	required = true
-[rerere]
-	enabled = true
-#[branch]
-#	autosetuprebase = always
-#[pull]
-#	rebase = true
-# [url "ssh://git@github.com/"]
-#	insteadOf = https://github.com/
+
 [alias]
 	unstage = reset HEAD --
 	unstash = stash pop
@@ -68,3 +63,12 @@
 	publish = !legit publish \"$@\"
 	graft = !legit graft \"$@\"
 	aliases = --get-regexp
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
+[commit]
+	template = /Users/scoffman/.stCommitMsg
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/

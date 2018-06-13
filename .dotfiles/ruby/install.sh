@@ -7,11 +7,16 @@ for PACKAGE in rbenv ruby-build rbenv-gem-rehash rbenv-default-gems; do
   fi
 done
 
-rbenv install 2.1.3
-rbenv global 2.1.3
+rbenv install 2.4.0
+rbenv global 2.4.0
+rbenv shell 2.4.0
 # Get Compass and SASS
+gem install bundler
+gem install rubocop
+gem install reek
 gem install compass
-gem install scss-lint
+gem install scss_lint
 gem install font-awesome-sass
 gem install bootstrap-sass
+gem install puppet-lint
 exit 0

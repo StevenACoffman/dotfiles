@@ -23,8 +23,9 @@ load_dotfiles() {
         $HOME/bin/shell/functions/* # Functions
         $HOME/bin/shell/bash_prompt.sh # Custom bash prompt
         $HOME/bin/shell/bash_paths.sh # Path modifications
-        $(brew --prefix)/etc/bash_completion.d/* # Bash completion (installed via Homebrew)
         $HOME/bin/shell/bash_completion.sh # Extra bash completion (e.g. git aliases)
+        $HOME/bin/shell/completions/*
+        # $(brew --prefix)/etc/bash_completion.d/* # Bash completion (installed via Homebrew)
         $HOME/.bash_profile.local # Local and private settings not under version control (e.g. git credentials)
     )
 
