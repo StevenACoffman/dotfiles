@@ -30,7 +30,8 @@ vcsh dotfiles push -u origin master
 ```
 
 ### How to restore it
-1. Install vcsh and git, github (as below)
+0. Get your ssh keys where they need to be, and install [homebrew](https://brew.sh/). 
+1. `brew install vcsh git`
 2. Run these commands
 ```bash
 vcsh init dotfiles
@@ -48,9 +49,20 @@ The software selected is software that is "tried and true" --- software I need a
 
 ## XCode
 
-Start with installing xcode command line tools
+Start with installing xcode command line tools and agreeing to the license
 ```bash
 xcode-select --install
+sudo xcodebuild -license
+```
+## OS Tweaks
+OSX has a ridiculously low limit on the maximum number of open files. If you use OSX to develop Node applications -- or even if you just use Node tools like grunt or gulp -- you've no doubt run into this issue.
+
+```
+echo kern.maxfiles=65536 | sudo tee -a /etc/sysctl.conf
+echo kern.maxfilesperproc=65536 | sudo tee -a /etc/sysctl.conf
+sudo sysctl -w kern.maxfiles=65536
+sudo sysctl -w kern.maxfilesperproc=65536
+ulimit -n 65536 65536
 ```
 
 ### Install from App Store
@@ -59,13 +71,13 @@ xcode-select --install
 * [Keynote](https://itunes.apple.com/us/app/keynote/id361285480?mt=8)
 * [Pomodoro One](https://itunes.apple.com/us/app/pomodoro-one/id907364780?mt=12)
 * [Skitch](https://itunes.apple.com/us/app/skitch-snap.-mark-up.-share./id425955336?mt=12&uo=4)
-* [Twitter](https://itunes.apple.com/us/app/twitter/id409789998?mt=12&uo=4)
 * [WiFi Explorer](https://itunes.apple.com/us/app/wifi-explorer/id494803304?mt=12&uo=4)
 * [WiFi Signal](https://itunes.apple.com/us/app/wifi-signal/id525912054?mt=12&uo=4)
 * [Todoist](https://itunes.apple.com/us/app/todoist-to-do-list-task-list/id585829637?mt=12&uo=4)
 * [Xcode](https://itunes.apple.com/us/app/xcode/id497799835?mt=12&uo=4)
-* [MousePose](https://itunes.apple.com/us/app/mousepose/id405904955?mt=12) 
-* WunderList - been meaning to try it
+* [MousePose](https://itunes.apple.com/us/app/mousepose/id405904955?mt=12)
+* [BreakTime](http://breaktimeapp.com/)
+* WunderList - been meaning to try it. It's on my TodoList.
 * EverNote - yep
 * iBoostUp - meh
 * PomodoroTodo
