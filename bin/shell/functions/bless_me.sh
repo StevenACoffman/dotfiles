@@ -34,7 +34,7 @@ function bless_me() {
         ip_from_cert=$(ssh-keygen -L -f "${BLESS_CERT}" | grep "source-address" | awk '{print $2}')
         if [[ ( "${currenttime}" -ge "${certtime}" ) || ( "${ip_from_cert}" != "${SOURCE_IP}" ) ]]; then
             ssh-add -d $RSA_KEY_FILE 2>/dev/null
-            $BLESS_DIR/bless_client.py ${SOURCE_IP} ${PUBLIC_KEY} ${BLESS_CERT}
+            $BLESS_DIR/bless_client.py ${SOURCE_IP} ${PUBLIC_KEY} ${BLESS_CERT} scoffman
             if [ -f "${BLESS_CERT}" ]; then
                 ssh-add -t 14440 $RSA_KEY_FILE
             fi
@@ -45,7 +45,7 @@ function bless_me() {
             ssh-keygen -f ${RSA_KEY_FILE} -b 4096 -t rsa -N ''
         fi
         ssh-add -d $RSA_KEY_FILE 2>/dev/null
-        $BLESS_DIR/bless_client.py ${SOURCE_IP} ${PUBLIC_KEY} ${BLESS_CERT}
+        $BLESS_DIR/bless_client.py ${SOURCE_IP} ${PUBLIC_KEY} ${BLESS_CERT} scoffman
         #SOURCE_IP: The source IP where the SSH connection will be initiated from
 
         #PUBLIC_KEY to sign: The id_rsa.pub that will be used in the SSH request.  This is
@@ -55,6 +55,7 @@ function bless_me() {
         #"ssh will also try to load certificate information from the filename
         #obtained by appending -cert.pub to identity filenames" e.g.  the <id_rsa.pub to sign>.
 
+        #USERNAME : AWS username for audit logging
 
         if [ -f "${BLESS_CERT}" ]; then
             ssh-add -t 14440 $RSA_KEY_FILE
@@ -109,4 +110,12 @@ function bless_sftp() {
         -o "UserKnownHostsFile=/dev/null" \
         -o "StrictHostKeyChecking=no" \
         -i "${RSA_KEY_FILE}" "$@"
+}
+
+function bless_setup() {
+    pyenv install 2.7.15
+    mkvirtualenv venv-bless 2.7.15
+    workon venv-bless
+    pip install --ignore-installed six boto3 kmsauth
+    pip install --upgrade pip
 }

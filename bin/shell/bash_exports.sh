@@ -20,6 +20,12 @@ export SONAR_RUNNER_HOME=/usr/local/opt/sonar-runner/libexec
 export NODE_PATH="/usr/local/lib/node_modules"
 export PYENV_ROOT=/usr/local/var/pyenv
 export SCALA_HOME=/usr/local/opt/scala
+export AWS_VAULT_DEFAULT_PROFILE='core'
+export AWS_VAULT_KEYCHAIN_NAME='login'
+export AWS_MFA_NAME='aws-ithakasequoia-scoffman'
+# 3600s is max for chainging roles, but 14400s is mfa policy
+export AWS_ASSUME_ROLE_TTL='3600s'
+export AWS_SESSION_TTL='3600s'
 #export PYTHONPATH="/usr/local/opt/pypy3/libexec/site-packages:$PYTHONPATH"
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
@@ -48,6 +54,7 @@ export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 #Set shell to have reasonable limits, see http://docs.basho.com/riak/latest/ops/tuning/open-files-limit/#Mac-OS-X
 ulimit -n 65536
-ulimit -u 2048
+#ulimit -u 2048
+#ulimit -u unlimited
 
 source "$HOME/secret/secret_exports.sh"

@@ -17,3 +17,7 @@ if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
 export GOPATH=/Users/scoffman/go
 
 export PATH="$HOME/.cargo/bin:$PATH"
+
+. $HOME/.asdf/asdf.sh
+
+. $HOME/.asdf/completions/asdf.bash

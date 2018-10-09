@@ -130,3 +130,36 @@ function list_cidr_blocks() {
     # replace test with prod
     aws ec2 describe-subnets --filter "Name=tag:sequoia:environment,Values=test" "Name=tag-value,Values=test-public-*" --query 'Subnets[].CidrBlock'
 }
+
+function avs() {
+    unset AWS_VAULT
+    VAULT_SERVER_PID=$(lsof -t -i :9099)
+    if [[ -n "${VAULT_SERVER_PID:-}" ]]
+    then
+      kill -9 "${VAULT_SERVER_PID}"
+    fi
+
+    aws-vault remove --sessions-only\
+     "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+     2>&1 >/dev/null
+
+    aws-vault exec -s "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+     <<< "$(2fa aws-ithakasequoia-scoffman)"\
+     2> >( sed '$d' >&2 )
+     1> >( sed '$d' >&1 )
+}
+
+function avlc() {
+    aws-vault remove --sessions-only\
+     "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+     2>&1 >/dev/null
+
+    aws-vault login "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+     <<< "$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia-scoffman})"\
+     2> >( sed '$d' >&2 )\
+     1> >( sed '$d' >&1 )
+}
+
+function awhoami() {
+    aws sts get-caller-identity
+}

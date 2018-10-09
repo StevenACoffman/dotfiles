@@ -6,7 +6,7 @@ show-remote-rubies() {
     rbenv install --list
 }
 
-showpythons() {
+showrubies() {
     #Show available installed ruby versions
     rbenv versions
 }

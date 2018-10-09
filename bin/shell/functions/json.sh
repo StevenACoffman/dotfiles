@@ -145,7 +145,7 @@ function make_pull() {
 
     CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
     # Preserve whitespace by setting IFS to something unlikely
-    IFS='🍔'
+    IFS='|'
     MESSAGE="$(jira_pull "${CURRENT_BRANCH}")"
     # If when you execute the next line (hub) you get the error:
     # Unprocessable Entity (HTTP 422) Invalid value for "head"

@@ -8,13 +8,13 @@ else
     if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
     if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 fi
-#pyenv virtualenv 3.5.1 ide-virtualenv-3.5.1
+#pyenv virtualenv 2.7.15 stacker
 pyenv activate stacker
 # Find unique identifier for your stack:
 # sit -n scoffman
 # Delete your stack using unique identifier above:
 # sit -g -p personal/scoffman.k8skopsPEZ.properties -d -s scoffman-007de42dd5ee
-# Create a new stack using unique identifier above:
+# Create a new stack creating new unique identifier:
 # sit -g -p personal/scoffman.k8skopsPEZ.properties -s new
 # Update your stack using unique identifier above:
 # sit -g -p personal/scoffman.k8skopsPEZ.properties -s scoffman-44f2b1f090d6

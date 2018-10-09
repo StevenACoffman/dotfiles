@@ -9,10 +9,10 @@ alias xcode='open -a /Applications/Xcode.app'
 alias ..="cd .."
 alias ...="cd ../.."
 alias ~="cd ~"
-alias -- -="cd -"
+alias --="cd -"
 alias gojs="cd ~/Documents/js"
 alias gogit="cd ~/Documents/git"
-alias gosvn="cd ~/Documents/svn"
+alias gogo="cd ~/go/src"
 
 # List dir contents aliases
 # ref: http://ss64.com/osx/ls.html

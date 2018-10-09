@@ -65,13 +65,22 @@ workon() {
     pyenv activate "$1"
 }
 
+workdone() {
+    gopy
+    export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+    pyenv deactivate
+}
+
 lsvirtualenv() {
     gopy
     pyenv virtualenvs
 }
 
 mkvirtualenv() {
-    PYTHON_VERSION=${2:-3.6.3}
+    # For pycharm use:
+# pyenv virtualenv <specific python version> <environment name> --copies
+
+    PYTHON_VERSION=${2:-3.6.5}
     echo "Python version $PYTHON_VERSION"
     gopy
     pyenv virtualenv "${PYTHON_VERSION}" "$1"
@@ -79,11 +88,15 @@ mkvirtualenv() {
 
 showpythons() {
     #Show available installed python versions
-    gopy
     pyenv versions
 }
 
 show-remote-pythons() {
     #Show python versions that are remotely avaialable for installation
     pyenv install --list
+}
+install-python() {
+    PYTHON_VERSION=${1:-3.6.5}
+    echo "Installing Python version $PYTHON_VERSION"
+    pyenv install "${PYTHON_VERSION}"
 }

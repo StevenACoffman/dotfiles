@@ -9,8 +9,8 @@ else
     if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
     if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 fi
-#pyenv virtualenv 3.6.3 ide-3.6.3
-pyenv activate ide-3.6.3
+#pyenv virtualenv 3.6.3 ide
+pyenv activate ide
 pylint "$@"
 
 #Restore old virtualenv

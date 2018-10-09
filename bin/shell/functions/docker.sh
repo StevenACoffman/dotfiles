@@ -88,3 +88,7 @@ aws ec2 run-instances \
     --key-name MySSHKeyName \
     --security-groups sg-name
 }
+
+function run_bash_override_entrypoint () {
+    docker run -it --entrypoint "/bin/bash" $1 $2
+}

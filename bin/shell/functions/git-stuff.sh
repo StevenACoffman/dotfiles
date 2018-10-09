@@ -20,7 +20,7 @@ function commit() {
         MESSAGE="${2}"
     fi
 
-    git commit -am "${CURRENT_BRANCH}: ${MESSAGE}"
+    git commit -asm "${CURRENT_BRANCH}: ${MESSAGE}"
 }
 
 function test-safe-push() {

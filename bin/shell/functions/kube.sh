@@ -89,6 +89,8 @@ function get_namespaces() {
 
 
 function set_kops_env() {
+    # asdf local kubectl 1.8.14
+    export ASDF_KUBECTL_VERSION=1.8.14
     WHOAMI=$(whoami)
     STACK_NAME=${1:-$WHOAMI}
     export KOPS_NAME="k8s-cluster.${STACK_NAME}.cirrostratus.org"
@@ -112,6 +114,7 @@ EOF
   printf '%s' "$PASSWORD" | pbcopy
   echo "Password copied to clipboard"
   open "https://api.${KOPS_NAME}/ui"
+  # /api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
 }
 
 function kube_master_ssh() {
@@ -153,4 +156,64 @@ function dang_it_make_better_name_later() {
 #   -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
 #   https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PO‌​RT/api/v1/namespaces‌​/default/services/$S‌​ERVICE_NAME \
 #   | jq '.spec.ports[] | select(.name=="http") | .nodePort'
+}
+
+
+function gimme_mini() {
+    # asdf local kubectl 1.11.0
+    export ASDF_KUBECTL_VERSION=1.11.0
+    kubectl completion bash > $(brew --prefix)/etc/bash_completion.d/kubectl
+    minikube start --extra-config=apiserver.authorization-mode=RBAC
+    kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+    kubectl create clusterrolebinding default-cluster-admin --clusterrole=cluster-admin --serviceaccount=default:default
+    kubectl -n kube-system create sa tiller
+    kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+    helm init --service-account tiller
+#     helm install stable/kube2iam --name kube2iam \
+# --set=extraArgs.base-role-arn=arn:aws:iam::$AWS_ACCOUNT_ID:role/,extraArgs.default-role=$AWS_KUBE2IAM_DEFAULT_ROLE \
+# --set host.iptables=true \
+# --set "aws.secret_key=$AWS_SECRET_KEY" \
+# --set "aws.access_key=$AWS_ACCESS_KEY_ID" \
+# --set "aws.region=$AWS_REGION" \
+# --namespace kube-system
+
+}
+obtain_role_arn() {
+  if [[ $STACK_NAME == "" ]]
+  then
+    STACK_NAME=$(echo $CLUSTER_NAME | cut -d '-' -f 1)
+    printf "Stack name for role not determined, attempting $STACK_NAME...\n"
+  fi
+  EKSSTACK=$(aws cloudformation list-stack-resources --stack-name ${STACK_NAME} | jq -r ".StackResourceSummaries[] | select(.LogicalResourceId==\"EKS\").PhysicalResourceId")
+  RA=$(aws cloudformation list-stack-resources --stack-name $EKSSTACK | jq -r ".StackResourceSummaries[] | select(.LogicalResourceId | test(\"^EKSNodeInstanceRole\")) | .PhysicalResourceId")
+  if [[ $? < 1 ]]
+  then
+    printf "Discovered NODE Role ARN ${RA} for cluster ${CLUSTER_NAME}\n"
+  else
+    printf "Did not discover role ARN, $?\n"
+    usage
+  fi
+  NODE_ROLE_ARN="${ACCT_ROLE_ARN_PRE}${RA}"
+}
+
+set_kubecontext() {
+  printf "attempting to update your $KUBECONFIG context for the cluster ${CLUSTER_NAME}...\n"
+  # EP=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.endpoint --output text)
+  # CC=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.certificateAuthority.data --output text)
+  KUBE_ROLE_ARN='arn:aws:iam::594813696195:role/sequoia-FullV1'
+  aws eks update-kubeconfig --name $CLUSTER_NAME --kubeconfig $KUBECONFIG --role-arn $KUBE_ROLE_ARN
+  # sed -e "s%<endpoint-url>%${EP}%g" \
+  # -e "s%<base64-encoded-ca-cert>%${CC}%g" \
+  # -e "s%<cluster-name>%${CLUSTER_NAME}%g" \
+  # ~/.kube/kubeconfig.tmpl > $KUBECONFIG
+  printf "\n...done\n\n"
+}
+
+function eksme() {
+    export STACK_NAME="${STACK_NAME:-test}"
+    export KUBECONFIG="$HOME/.kube/config_eks_${STACK_NAME}"
+    export CLUSTER_NAME="${STACK_NAME}-c20n"
+# asdf local kubectl 1.10.5
+    export ASDF_KUBECTL_VERSION=1.10.7
+    set_kubecontext
 }

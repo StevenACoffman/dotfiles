@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 """
 let us get some cloud INFOrmation.
 
@@ -12,16 +12,17 @@ import re
 import os
 import sys
 import time
+import boto3
 import fnmatch
 import argparse
 import subprocess
 from glob import glob
 from difflib import unified_diff
-from boto.cloudformation.connection import CloudFormationConnection
+from configparser import ConfigParser
+# from boto.cloudformation.connection import CloudFormationConnection
 
 
 class call(argparse.Action):
-
     """
     a class to overload action.
 
@@ -42,13 +43,28 @@ class do(object):
 
     """do the do."""
 
-    def __init__(self, values=None, stack='all', arglist=[]):
-        """do class."""
+    def __init__(self, values=None, stack='all', arglist=[], profile_name='Full'):
+        """Dude you have class."""
         self.values = values
         self.arglist = arglist
         self.stack = stack
-        self.proproot = ('/Users/scoffman/Documents/git/continuous-deployment'
-                         '/cfn-templates')
+        self.profile_name = profile_name
+        self.role_arn = self._arn_name()
+        self.session = boto3.Session(profile_name=profile_name)
+        self.proproot = ('{}/Documents/github/continuous-deployment/cfn-templates'
+                         .format(os.getenv('HOME', '/')))
+
+    def _arn_name(self):
+        """Get the role arn from credentials file."""
+        credentials_parser = ConfigParser()
+        creds_file = '{}/.aws/config'.format(os.getenv('HOME', '~'))
+        if os.path.isfile(creds_file):
+            credentials_parser.readfp(open(creds_file))
+        else:
+            print('Missing Credentials file for aws?')
+            sys.exit(1)
+        return credentials_parser['profile {}'.format(self.profile_name)]['role_arn']
+
 
     def get(self, values):
         """
@@ -56,11 +72,11 @@ class do(object):
 
         return nothing
         """
-        CFC = CloudFormationConnection()
+        CFC = self.session.client('cloudformation')
         INFO = {}
         if ('new' or 'all') not in values:
             for stack in values:
-                STACKQ = CFC.describe_stacks(stack)
+                STACKQ = CFC.describe_stacks(StackName=stack)
                 print('Querying for {}....'.format(stack))
         elif 'new' not in values:
             STACKQ = CFC.describe_stacks()
@@ -68,14 +84,15 @@ class do(object):
         else:
             return
 
-        for stack in STACKQ:
-            INFO[str(stack.stack_name)] = {}
-            for out in stack.outputs:
+        for stack in STACKQ['Stacks']:
+            INFO[str(stack['StackName'])] = {}
+            for out in stack['Outputs']:
                 # for out in stack.outputs[0:4:3]:
-                if 'SecretHashKey' in out.key:
-                    INFO[str(stack.stack_name)][str(out.key)] = str(out.value)
+                if 'SecretHashKey' in out['OutputKey']:
+                    INFO[str(stack['StackName'])][str(out['OutputKey'])] = str(out['OutputValue'])
         vkey = 'missing'
-        for k, v in INFO.iteritems():
+        print(INFO)
+        for k, v in INFO.items():
             try:
                 if len([y for y in re.finditer('-', k)]) > 1:
                     message = 'Substack of {}  '.format(k.split('-')[0])
@@ -88,7 +105,7 @@ class do(object):
             except KeyError as da_erro:
                 message = ('\t : {} {}\n'
                            .format(da_erro, 'stack has no key yet...'))
-                print message
+                print(message)
                 os.putenv["LAST_AWS_STACK_KEY"] = 'new'
         return (message, vkey)
 
@@ -110,7 +127,7 @@ class do(object):
                     if 'personal' in dirs:
                         properties.append(os.path.join(root, filename))
 
-        print properties
+        print(properties)
         with open(meta_file, 'w') as mf:
             mf.write(str(properties))
         return properties
@@ -121,7 +138,7 @@ class do(object):
 
         find and show the diff of the files
         """
-        for item in ['', '-Platform', '-DSE', '-Services']:
+        for item in ['', '-Platform', '-DSE', '-Services', '-EKS']:
             new_file = './.template-new{}.json'.format(item)
             exs_file = './.template-existing{}.json'.format(item)
             try:
@@ -140,7 +157,7 @@ class do(object):
                 print('no {} file: {}'.format(item, missing))
                 pass
                 continue
-            print ''.join(list(file_diff))
+            print(''.join(list(file_diff)))
             print('\n---------------------------------\n')
 
     def stackit(self, properties=None, stackkey=None, test=False, delme=False):
@@ -149,10 +166,17 @@ class do(object):
 
         java -jar ~/github/continuous-deployment/stacker/target/stacker-exec.jar
         """
+
+        os.environ['AWS_ACCESS_KEY_ID'] = self.session.get_credentials().access_key
+        os.environ['AWS_SECRET_ACCESS_KEY'] = self.session.get_credentials().secret_key
+        os.environ['AWS_SESSION_TOKEN'] = self.session.get_credentials().token
+        print('STS Assume Role complete - creds expire {}'
+              .format(self.session.get_credentials()._expiry_time))
         stacker = ('{}/../stacker/target/stacker-exec.jar'.format(self.proproot))
         self.arglist.insert(0, 'java')
         self.arglist.insert(1, '-jar')
         self.arglist.insert(2, stacker)
+        self.arglist.append('-a {}'.format(self.role_arn))
         if stackkey[0] != 'new':
             self.arglist.append('-s {}'.format(stackkey[0]))
         self.arglist.append('-p {}/{}'.format(self.proproot, properties[0]))
@@ -174,7 +198,7 @@ class do(object):
         try:
             with open('{}'.format(stack_file_name), 'r') as f:
                 stack_name = [f.readline().split('=')[1].rstrip('\n')]
-                print stack_name, self.values
+                print(stack_name, self.values)
                 if 'new' not in stackkey:
                     (message, key) = self.get(stack_name)
                 else:
@@ -195,7 +219,7 @@ class do(object):
             print(' Key Stack New or Missing')
         print('Executing {} ...'.format(cmd))
         p = subprocess.call(cmd, shell=True)
-        print p
+        print(p)
 
 
 def Parseargs():
@@ -247,26 +271,33 @@ def Parseargs():
                         action='store_true',
                         default=False,
                         help='Remove da stack')
+    parser.add_argument('-i',
+                        dest='aws_profile_identity',
+                        default='Full',
+                        nargs=1,
+                        help='AWS Profile Identity to use for Assume')
     args = parser.parse_args()
     return(args)
 
 
 if __name__ == "__main__":
+    MYOPTS = Parseargs()
+    stackit = do(profile_name=MYOPTS.aws_profile_identity)
     if len(sys.argv) < 2:
         print('default behavior to list all....')
-        do().get('all')
+        stackit.get('all')
         sys.exit(0)
-    MYOPTS = Parseargs()
+
     if MYOPTS.stackname:
-        do().get(MYOPTS.stackname)
+        stackit.get(MYOPTS.stackname)
         sys.exit(0)
 
     if MYOPTS.listem:
-        do().availableStacks()
+        stackit.availableStacks()
     if MYOPTS.stackit:
-        do().stackit(MYOPTS.stackit_prop,
-                     MYOPTS.stackit_key,
-                     MYOPTS.stackit_test,
-                     MYOPTS.stackit_del)
+        stackit.stackit(MYOPTS.stackit_prop,
+                        MYOPTS.stackit_key,
+                        MYOPTS.stackit_test,
+                        MYOPTS.stackit_del)
     if MYOPTS.stackit_test:
-        do().show_diff()
+        stackit.show_diff()

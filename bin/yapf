@@ -1,6 +1,6 @@
 #!/bin/bash
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-
+NEW_VIRTUALENV="ide"
 if [ -n "$(type -t pyenv)" ] && [ "$(type -t pyenv)" = function ]; then
 #    echo "pyenv is already initialized"
     OLD_VIRTUALENV=${VIRTUAL_ENV##*/}
@@ -8,13 +8,20 @@ else
     if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
     if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 fi
-#pyenv virtualenv 3.6.3 ide-3.6.3
+#pyenv virtualenv 3.6.3 ide
 # pip install yapf autopep8 beautysh flake8 pylint isort
-pyenv activate ide-3.6.3
+# if we are already running the virtualenv, then do not activate
+if [[ "${OLD_VIRTUALENV:-}" != "${NEW_VIRTUALENV}" ]]
+then
+    pyenv activate "${NEW_VIRTUALENV}"
+    NOOP=true
+fi
 yapf "$@"
 
-#Restore old virtualenv
-if [[ -n "${OLD_VIRTUALENV}" ]]
+RETURN_VALUE="$?"
+# Restore old virtualenv
+if [[ -n "${OLD_VIRTUALENV:-}" ]] && [[ "${NOOP:-}" != "true" ]]
 then
-    pyenv activate "$OLD_VIRTUALENV"
+    pyenv activate "${OLD_VIRTUALENV}"
 fi
+exit ${RETURN_VALUE}

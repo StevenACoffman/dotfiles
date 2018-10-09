@@ -24,14 +24,32 @@ brew install pyenv-pip-migrate
 #### update/create your .bash_profile
 #homebrew
 export PATH=/usr/local/bin:/usr/local/sbin:${PATH}
-if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+if [ -n "$(type -t pyenv)" ] && [ "$(type -t pyenv)" = function ]; then
+#    echo "pyenv is already initialized"
+    true
+else
+    if which pyenv > /dev/null 2>&1; then
+        eval "$(pyenv init -)"
+    else
+      echo "You do not have pyenv installed"
+    fi
+    if which pyenv-virtualenv-init > /dev/null; then
+      eval "$(pyenv virtualenv-init -)"
+    else
+      echo "You do not have pyenv-virtualenv installed"
+    fi
+fi
+
+set -e
 pyenv install 3.5.1
+pyenv install 3.6.5
+pyenv install 2.7.15
 pyenv rehash
 #pyenv global 3.5.1
 #pyenv shell 3.5.1
-pyenv virtualenv 3.5.1 ide-virtualenv-3.5.1
-pyenv activate 3.5.1
+
+pyenv virtualenv 3.6.5 ide
+pyenv activate ide
 pip install -U beautysh
 pip install -U flake8
 pip install -U jedi
@@ -40,6 +58,22 @@ pip install -U pytest
 #actually installs sqlformat for atom beautify plugin. Yes, this is is confusing.
 pip install -U sqlparse
 pip install -U proselint
+pip install --upgrade pip
+pyenv deactivate
+
+pyenv virtualenv 2.7.15 venv-bless
+pyenv activate venv-bless
+pip install --ignore-installed six boto3 kmsauth
+pip install --upgrade pip
+pyenv deactivate
+
+pyenv virtualenv 3.6.5 aws
+pyenv activate aws
+pip install awscli
+pip install --upgrade pip
+pyenv deactivate
+
+
 #virtualenv wrapper
 #if [ -d ~/.virtualenvs ]; then
 #  export WORKON_HOME=~/.virtualenvs

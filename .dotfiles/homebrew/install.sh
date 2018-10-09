@@ -21,6 +21,7 @@ fi
 for PACKAGE in \
 git \
 curl \
+bash-completion \
 lynx \
 mas \
 pandoc \
@@ -30,6 +31,7 @@ springboot \
 ssh-copy-id \
 uncrustify \
 wget \
+nvm \
 watchman; do
   if [ -z "$(brew ls --versions $PACKAGE)" ]
   then
