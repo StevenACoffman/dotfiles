@@ -1,4 +1,9 @@
 #!/bin/bash
+
+function git-diff-exclude-package-lock() {
+  git diff -- . ':(exclude)package-lock.json'    
+}
+
 function gb () {
     git rev-parse --abbrev-ref HEAD
 }
@@ -34,6 +39,15 @@ function test-safe-push() {
     git push "git@git.test.cirrostratus.org:repos/${repo_name}.git" "${branch}:master" -f
   fi
 
+}
+
+function gptest() {
+    # Git push test current branch to masters
+    git push test "$(git rev-parse --abbrev-ref HEAD):master"
+}
+function gpprod() {
+    # Git push test current branch to masters
+    git push prod "$(git rev-parse --abbrev-ref HEAD):master"
 }
 
 function prod-safe-push() {

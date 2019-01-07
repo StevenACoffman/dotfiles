@@ -76,6 +76,15 @@ function list_vpcs() {
     # This seems to get the first one, not the whole list
     aws ec2 describe-vpcs --query 'Vpcs[].VpcId|[0]' --output text
 }
+
+function list_subnets() {
+    aws ec2 describe-subnets --query 'Subnets[?Tags[?Key==`sequoia:environment`]|[?Value==`acorn`]].SubnetId'
+}
+
+function list_secgrp() {
+    aws ec2 describe-security-groups --query 'SecurityGroups[?Tags[?Key==`sequoia:environment`]|[?Value==`acorn`]].GroupId'
+}
+
 function create_vpc_peering_connection() {
     export K8S_VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=$KOPS_NAME" --output text --query 'Vpcs[].VpcId')
     if [[ -z $K8S_VPC_ID ]]; then
@@ -130,36 +139,76 @@ function list_cidr_blocks() {
     # replace test with prod
     aws ec2 describe-subnets --filter "Name=tag:sequoia:environment,Values=test" "Name=tag-value,Values=test-public-*" --query 'Subnets[].CidrBlock'
 }
+# arn:aws:iam::594813696195:group/sequoia-core
 
 function avs() {
-    unset AWS_VAULT
-    VAULT_SERVER_PID=$(lsof -t -i :9099)
-    if [[ -n "${VAULT_SERVER_PID:-}" ]]
-    then
-      kill -9 "${VAULT_SERVER_PID}"
-    fi
+    while [ 1 ]
+    do
+        unset AWS_VAULT
+        VAULT_SERVER_PID=$(lsof -t -i :9099)
+        if [[ -n "${VAULT_SERVER_PID:-}" ]]
+        then
+          kill -9 "${VAULT_SERVER_PID}"
+        else
+            echo "Nothing running listening to 9099"
+        fi
 
-    aws-vault remove --sessions-only\
-     "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
-     2>&1 >/dev/null
+        aws-vault remove --sessions-only\
+         "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+         2>&1 >/dev/null
 
-    aws-vault exec -s "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
-     <<< "$(2fa aws-ithakasequoia-scoffman)"\
-     2> >( sed '$d' >&2 )
-     1> >( sed '$d' >&1 )
+         export TOTP="$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia})"
+         if [[ -n "${TOTP:-}" ]]
+         then
+           echo "Attempting to renew session with MFA OTP"
+           # 3540 seconds = 59 minutes
+           timeout3 -t 3540 aws-vault --debug exec --mfa-token=${TOTP} -s "${AWS_VAULT_DEFAULT_PROFILE:-core}"
+         else
+             echo "No MFA TOTP! 2fa did not find a MFA TOTP."
+         fi
+
+         VAULT_SERVER_PID=$(lsof -t -i :9099)
+         if [[ -n "${VAULT_SERVER_PID:-}" ]]
+         then
+           echo "Vault Server is still running but somewhere else"
+         else
+           echo "Vault Server Killed"
+         fi
+     done
 }
+
 
 function avlc() {
-    aws-vault remove --sessions-only\
-     "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
-     2>&1 >/dev/null
-
-    aws-vault login "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
-     <<< "$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia-scoffman})"\
-     2> >( sed '$d' >&2 )\
-     1> >( sed '$d' >&1 )
+    export TOTP="$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia})"
+    aws-vault login --mfa-token=${TOTP} "${AWS_VAULT_DEFAULT_PROFILE:-core}"
 }
+# function avlc() {
+#     aws-vault remove --sessions-only\
+#      "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+#      2>&1 >/dev/null
+#
+#     aws-vault login "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+#      <<< "$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia-scoffman})"\
+#      2> >( sed '$d' >&2 )\
+#      1> >( sed '$d' >&1 )
+# }
 
 function awhoami() {
     aws sts get-caller-identity
+}
+
+function aresync() {
+    # If a user's device is not synchronized when they try to use it,
+    # the user's sign-in attempt fails and IAM prompts the user to
+    # resynchronize the device.
+    #aws-vault exec --no-session ithakasequoia -- /usr/local/bin/aws sts get-caller-identity --output text --query 'Arn'  | awk -F\/ '{print $NF}'
+    AWS_USER=$(aws-vault exec --no-session ithakasequoia -- /usr/local/bin/aws iam get-user --output text --query 'User.UserName')
+
+    totp1="$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia})"; totp2="${totp1}"; while [ "${totp1}" == "${totp2}" ]; do totp2="$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia})"; echo "${totp2}"; sleep 1; done
+    # aws-vault exec --no-session ithakasequoia -- /usr/local/bin/aws iam list-virtual-mfa-devices
+    aws-vault exec --no-session ithakasequoia -- /usr/local/bin/aws iam resync-mfa-device \
+    --user-name "${AWS_USER}" \
+    --serial-number "arn:aws:iam::594813696195:mfa/${AWS_USER}" \
+    --authentication-code1 "${totp1}" \
+    --authentication-code2 "${totp2}"
 }

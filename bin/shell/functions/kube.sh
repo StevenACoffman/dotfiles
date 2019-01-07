@@ -99,6 +99,7 @@ function set_kops_env() {
     kops export kubecfg --name $KOPS_NAME --state $KOPS_STATE_STORE
 
 }
+
 function get_dashboard() {
   if [[ -z $KOPS_NAME ]]; then
     echo
@@ -198,22 +199,144 @@ obtain_role_arn() {
 
 set_kubecontext() {
   printf "attempting to update your $KUBECONFIG context for the cluster ${CLUSTER_NAME}...\n"
-  # EP=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.endpoint --output text)
-  # CC=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.certificateAuthority.data --output text)
+  EP=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.endpoint --output text)
+  CC=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.certificateAuthority.data --output text)
   KUBE_ROLE_ARN='arn:aws:iam::594813696195:role/sequoia-FullV1'
-  aws eks update-kubeconfig --name $CLUSTER_NAME --kubeconfig $KUBECONFIG --role-arn $KUBE_ROLE_ARN
+  # aws eks update-kubeconfig --name $CLUSTER_NAME --kubeconfig $KUBECONFIG --role-arn $KUBE_ROLE_ARN
   # sed -e "s%<endpoint-url>%${EP}%g" \
   # -e "s%<base64-encoded-ca-cert>%${CC}%g" \
   # -e "s%<cluster-name>%${CLUSTER_NAME}%g" \
   # ~/.kube/kubeconfig.tmpl > $KUBECONFIG
+cat <<EOF > $KUBECONFIG
+apiVersion: v1
+clusters:
+- cluster:
+    server: ${EP}
+    certificate-authority-data: ${CC}
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: aws
+  name: aws
+current-context: aws
+kind: Config
+preferences: {}
+users:
+- name: aws
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      command: aws-vault
+      args:
+        - "exec"
+        - "core"
+        - "--"
+        - "aws-iam-authenticator"
+        - "token"
+        - "-i"
+        - "${CLUSTER_NAME}"
+EOF
   printf "\n...done\n\n"
 }
 
 function eksme() {
     export STACK_NAME="${STACK_NAME:-test}"
-    export KUBECONFIG="$HOME/.kube/config_eks_${STACK_NAME}"
+#    export CLUSTER_NAME="${CLUSTER_NAME:-labs-v1}"
     export CLUSTER_NAME="${STACK_NAME}-c20n"
-# asdf local kubectl 1.10.5
+    export KUBECONFIG="$HOME/.kube/config_eks_${CLUSTER_NAME}"
+
+# asdf local kubectl 1.10.7
     export ASDF_KUBECTL_VERSION=1.10.7
     set_kubecontext
+}
+
+function eks_create_cluster() {
+    export CLUSTER_NAME="${CLUSTER_NAME:-labs-v1}"
+    export EKS_WORKER_AMI="ami-0440e4f6b9713faf6"
+    #acorn
+    export EKS_VPC_ID="vpc-de490eba"
+    export EKS_SUBNET_IDS="subnet-880c6bfe, subnet-e9da6ec3, subnet-d3853a8b, subnet-d4853a8c, subnet-890c6bff, subnet-edda6ec7"
+    export EKS_SECURITY_GROUPS="sg-63659818"
+
+    $ aws eks create-cluster \
+      --name k8s-workshop \
+      --role-arn $EKS_SERVICE_ROLE \
+      --resources-vpc-config subnetIds=${EKS_SUBNET_IDS},securityGroupIds=${EKS_SECURITY_GROUPS} \
+      --kubernetes-version 1.10
+}
+
+function eks_launch_worker_nodes() {
+
+    export CLUSTER_NAME="${CLUSTER_NAME:-labs-v1}"
+    export AWS_STACK_NAME="${CLUSTER_NAME}-eks-workers"
+    export EKS_WORKER_AMI="ami-0440e4f6b9713faf6"
+    #acorn
+    export EKS_VPC_ID="vpc-de490eba"
+    export EKS_SUBNET_IDS="subnet-880c6bfe, subnet-e9da6ec3, subnet-d3853a8b, subnet-d4853a8c, subnet-890c6bff, subnet-edda6ec7"
+    export EKS_SECURITY_GROUPS="sg-63659818"
+
+    export EKS_VPC_ID="$(aws eks describe-cluster --name labs-v1 --query cluster.resourcesVpcConfig.vpcId --output text)"
+    export EKS_SUBNET_IDS="$(aws eks describe-cluster --name labs-v1 --query cluster.resourcesVpcConfig.subnetIds --output text | tr '\t' ,)"
+    export EKS_SECURITY_GROUPS="$(aws eks describe-cluster --name labs-v1 --query cluster.resourcesVpcConfig.securityGroupIds --output text | tr '\t' ,)"
+
+    export NODE_AUTOSCALING_GROUP_MAX_SIZE="20"
+    export NODE_INSTANCE_TYPE="m4.large"
+    aws cloudformation create-stack \
+  --stack-name "${AWS_STACK_NAME}" \
+  --template-url https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-nodegroup.yaml \
+  --capabilities "CAPABILITY_IAM" \
+  --parameters "[{\"ParameterKey\": \"KeyName\", \"ParameterValue\": \"cfn-sagoku-key\"},
+                 {\"ParameterKey\": \"NodeImageId\", \"ParameterValue\": \"${EKS_WORKER_AMI}\"},
+                 {\"ParameterKey\": \"ClusterName\", \"ParameterValue\": \"${CLUSTER_NAME}\"},
+                 {\"ParameterKey\": \"NodeGroupName\", \"ParameterValue\": \"${AWS_STACK_NAME}\"},
+                 {\"ParameterKey\": \"ClusterControlPlaneSecurityGroup\", \"ParameterValue\": \"${EKS_SECURITY_GROUPS}\"},
+                 {\"ParameterKey\": \"VpcId\", \"ParameterValue\": \"${EKS_VPC_ID}\"},
+                 {\"ParameterKey\": \"NodeAutoScalingGroupMaxSize\", \"ParameterValue\": \"${NODE_AUTOSCALING_GROUP_MAX_SIZE}\"},
+                 {\"ParameterKey\": \"NodeInstanceType\", \"ParameterValue\": \"${NODE_INSTANCE_TYPE}\"},
+                 {\"ParameterKey\": \"Subnets\", \"ParameterValue\": \"${EKS_SUBNET_IDS}\"}]" \
+  --tags '[{"Key":"sequoia:user","Value":"Cypress@ithaka"},{"Key":"sequoia:environment","Value":"acorn"},{"Key":"sequoia:basedomain","Value":"cirrostratus.org"}]'
+
+}
+
+function eks_get_worker_role_arn() {
+    export CLUSTER_NAME="${CLUSTER_NAME:-labs-v1}"
+    export AWS_STACK_NAME="${CLUSTER_NAME}-eks-workers"
+    export ACCT_ROLE_ARN_PRE="arn:aws:iam::594813696195:role/"
+    RA="$(aws cloudformation list-stack-resources --stack-name "${AWS_STACK_NAME}" --query 'StackResourceSummaries[?LogicalResourceId==`NodeInstanceRole`].PhysicalResourceId' --output text)"
+    export NODE_ROLE_ARN="${ACCT_ROLE_ARN_PRE}${RA}"
+    echo "${NODE_ROLE_ARN}"
+}
+
+function eks_apply_auth_configmap() {
+    eks_get_worker_role_arn
+#    read -r -d '' EKS_AUTH_CONFIGMAP <<EOF
+cat <<EOF | kubectl create -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapUsers: |
+    - userarn: arn:aws:iam::594813696195:user/scoffman
+      username: scoffman
+      groups:
+        - system:masters
+  mapRoles: |
+    - rolearn: ${NODE_ROLE_ARN}
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+    - rolearn: arn:aws:iam::594813696195:role/sequoia-FullV1
+      username: admin:{{AccountID}}:{{SessionName}}
+      groups:
+        - system:masters
+    - rolearn: arn:aws:iam::594813696195:role/sequoia-DevelopmentV1
+      username: development:{{AccountID}}:{{SessionName}}
+      groups:
+        - system:masters
+EOF
+
 }

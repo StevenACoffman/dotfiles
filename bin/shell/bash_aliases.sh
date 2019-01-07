@@ -9,7 +9,7 @@ alias xcode='open -a /Applications/Xcode.app'
 alias ..="cd .."
 alias ...="cd ../.."
 alias ~="cd ~"
-alias --="cd -"
+alias -- -="cd -"
 alias gojs="cd ~/Documents/js"
 alias gogit="cd ~/Documents/git"
 alias gogo="cd ~/go/src"
@@ -27,7 +27,7 @@ alias lat="ls -AGFoth"
 
 # Concatenate and print content of files (add line numbers)
 alias catn="cat -n"
-
+alias nr="npm run"
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"

@@ -45,10 +45,11 @@ if which rbenv > /dev/null; then eval "$(rbenv init - --no-rehash)"; fi
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 #export SDKMAN_DIR="/Users/scoffman/.sdkman"
 #[[ -s "/Users/scoffman/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/scoffman/.sdkman/bin/sdkman-init.sh"
-
-export NVM_DIR="/Users/scoffman/.nvm"
+export NVM_SYMLINK_CURRENT=true
+export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+nvm use default
 
 # Perl? really?
 #PATH="/Users/scoffman/perl5/bin${PATH+:}${PATH}"; export PATH;
@@ -62,7 +63,29 @@ export NVM_DIR="/Users/scoffman/.nvm"
 
 # tabtab source for serverless package
 # uninstall by removing these lines or running `tabtab uninstall serverless`
-[ -f /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.bash ] && . /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.bash
+#[ -f /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.bash ] && . /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.bash
 # tabtab source for sls package
 # uninstall by removing these lines or running `tabtab uninstall sls`
-[ -f /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.bash ] && . /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.bash
+#[ -f /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.bash ] && . /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.bash
+
+export PIPENV_DEFAULT_PYTHON_VERSION=3.4.7
+export PATH="/usr/local/opt/openssl/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/openssl/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl/include"
+
+export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
+# if [ -n "$(type -t pyenv)" ] && [ "$(type -t pyenv)" = function ]; then
+# #    echo "pyenv is already initialized"
+#     true
+# else
+#     if which pyenv > /dev/null 2>&1; then
+#         eval "$(pyenv init -)"
+#     else
+#       echo "You do not have pyenv installed"
+#     fi
+#     if which pyenv-virtualenv-init > /dev/null; then
+#       eval "$(pyenv virtualenv-init -)"
+#     else
+#       echo "You do not have pyenv-virtualenv installed"
+#     fi
+# fi

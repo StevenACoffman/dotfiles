@@ -1,45 +1,12 @@
 #!/bin/bash
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-NEW_VIRTUALENV="aws"
-if [ -n "$(type -t pyenv)" ] && [ "$(type -t pyenv)" = function ]; then
-#    echo "pyenv is already initialized"
-    OLD_VIRTUALENV=${VIRTUAL_ENV##*/}
-else
-# initialize pyenv
-    if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
-    if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
-fi
 
-#pyenv virtualenv 3.5.1 pyenv activate aws
-
-# if we are already running the virtualenv, then do not activate
-if [[ "${OLD_VIRTUALENV:-}" != "${NEW_VIRTUALENV}" ]]
-then
-    pyenv activate "${NEW_VIRTUALENV}"
-    # echo ACTIVATED!
-    NOOP=true
-fi
-# if aws-vault not working, then use next line instead
-#aws "$@"
-
-# next line for debugging, but will mess up scripts
-#echo "$@"
-# begin vault
-
+# default cli path, allow overriding for pyenv shims
+# pyenv shim path should be /usr/local/var/pyenv/shims
+AWS_CLI_PATH="${AWS_CLI_PATH:-/usr/local/bin}"
 if [[ -n "${AWS_VAULT:-}" ]]
 then
-        aws "$@"
+    "${AWS_CLI_PATH}/aws" "$@"
 else
-    # echo VAULTING
     set -euo pipefail
-    exec aws-vault exec "${AWS_VAULT_DEFAULT_PROFILE:-core}" -- aws "$@"
+    exec aws-vault exec "${AWS_VAULT_DEFAULT_PROFILE:-engineer}" -- "${AWS_CLI_PATH}/aws" "$@"
 fi
-
-# end of vault
-RETURN_VALUE="$?"
-# Restore old virtualenv
-if [[ -n "${OLD_VIRTUALENV:-}" ]] && [[ "${NOOP:-}" != "true" ]]
-then
-    pyenv activate "${OLD_VIRTUALENV}"
-fi
-exit ${RETURN_VALUE}

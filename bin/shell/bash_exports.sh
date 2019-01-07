@@ -20,12 +20,16 @@ export SONAR_RUNNER_HOME=/usr/local/opt/sonar-runner/libexec
 export NODE_PATH="/usr/local/lib/node_modules"
 export PYENV_ROOT=/usr/local/var/pyenv
 export SCALA_HOME=/usr/local/opt/scala
+export AWS_REGION="us-east-1"
+export AWS_DEFAULT_REGION="us-east-1"
+export AWS_DEFAULT_OUTPUT="json"
 export AWS_VAULT_DEFAULT_PROFILE='core'
 export AWS_VAULT_KEYCHAIN_NAME='login'
-export AWS_MFA_NAME='aws-ithakasequoia-scoffman'
+export AWS_MFA_NAME='aws-ithakasequoia'
 # 3600s is max for chainging roles, but 14400s is mfa policy
 export AWS_ASSUME_ROLE_TTL='3600s'
-export AWS_SESSION_TTL='3600s'
+export AWS_SESSION_TTL='12h'
+export AWS_FEDERATION_TOKEN_TTL='12h'
 #export PYTHONPATH="/usr/local/opt/pypy3/libexec/site-packages:$PYTHONPATH"
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 

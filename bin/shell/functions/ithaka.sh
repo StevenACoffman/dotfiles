@@ -406,3 +406,19 @@ function sagoku_renew_app() {
         >&2 echo "Failure: code=$output"
     fi
 }
+
+ithaka_reset_password() {
+    docker run --interactive --rm --tty stevenacoffman/subvert-periodic-password-change scoffman office.share.org
+}
+
+jstor_get_token() {
+    export ENVIRONMENT="${1:-test}"
+    RESULT=$(curl -sSk -X POST --header "Content-Type: application/json" --header "Accept: */*" \
+    -d "{\"username\": \"${JSTOR_USER}\", \"password\": \"${JSTOR_PASSWORD}\"}" \
+    "http://iac-aaa.apps.${ENVIRONMENT}.cirrostratus.org:80/api/login")
+    ACCESS_SESSION=$(echo -n "${RESULT}" | jq -r '.session.sessionText')
+    ACCESS_SESSION_SIGNATURE=$(echo -n "$RESULT" | jq -r '.session.sessionSignature')
+    ACCESS_SESSION_TIMED_SIGNATURE=$(echo -n "$RESULT" | jq -r '.session.sessionTimedSignature')
+    UUID=$(uuidgen)
+    curl -sSk "https://www.jstor.org/api/labs-jwt-service/iac-jwt?appName=ugw&uuid=${UUID}&AccessSession=${ACCESS_SESSION}&AccessSessionSignature=${ACCESS_SESSION_SIGNATURE}&AccessSessionTimedSignature=${ACCESS_SESSION_TIMED_SIGNATURE}" | jq -r .jwt
+}

@@ -127,7 +127,7 @@ function jira_pull() {
     echo "${GITHUB_DESCRIPTION}"
     echo ""
     echo "###### Notify these people"
-    echo "@ithaka/cypress"
+    echo "@ithaka/labs"
     unset IFS
 }
 
@@ -155,3 +155,31 @@ function make_pull() {
     [ $RETVAL -ne 0 ] && echo "You forgot to push if you got Unprocessable Entity (HTTP 422)"
     unset IFS
 }
+
+decode_base64_url() {
+  local len=$((${#1} % 4))
+  local result="$1"
+  if [ $len -eq 2 ]; then result="$1"'=='
+  elif [ $len -eq 3 ]; then result="$1"'='
+  fi
+  echo "$result" | tr '_-' '/+' | openssl enc -d -base64
+}
+
+decode_jwt(){
+   decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
+}
+decode_jwt_date(){
+   decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq 'if .exp then (.expStr = (.exp|todate)) else . end'
+}
+
+# Decode JWT header
+alias jwth="decode_jwt 1"
+
+# Decode JWT Payload
+alias jwtp="decode_jwt 2"
+
+# Decode JWT header and pretty print the expiration field
+alias jwthd="decode_jwt_date 1"
+
+# Decode JWT Payload and pretty print the expiration field
+alias jwtpd="decode_jwt_date 2"
