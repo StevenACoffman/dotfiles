@@ -19,7 +19,6 @@
     ]
     telemetryConsent: "limited"
   editor:
-    fontSize: 22
     showInvisibles: true
     tabLength: 4
     tabType: "soft"
