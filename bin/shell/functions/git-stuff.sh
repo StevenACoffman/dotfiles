@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function git-diff-exclude-package-lock() {
-  git diff -- . ':(exclude)package-lock.json'    
+  git diff -- . ':(exclude)package-lock.json'
 }
 
 function gb () {
@@ -12,7 +12,7 @@ function gc () {
     # Usage: gc Message
     # result:
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-        git commit -m "${CURRENT_BRANCH}: $*"
+        git commit -asm "${CURRENT_BRANCH}: $*"
 }
 
 function commit() {

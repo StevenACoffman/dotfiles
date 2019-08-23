@@ -43,8 +43,9 @@ pyserver() {
 gopy() {
     #activates pyenv and pyenv-virtualenv
     #export PATH="$PYENV_ROOT/bin:$PATH"
+    export PATH="$HOME/.pyenv/bin:$PATH"
     if [ -n "$(type -t pyenv)" ] && [ "$(type -t pyenv)" = function ]; then
-    #    echo "pyenv is already initialized"
+        echo "pyenv is already initialized"
         true
     else
 		if which pyenv > /dev/null 2>&1; then

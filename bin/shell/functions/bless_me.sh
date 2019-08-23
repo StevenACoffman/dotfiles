@@ -47,7 +47,7 @@ function bless_me() {
             ssh-keygen -f ${RSA_KEY_FILE} -b 4096 -t rsa -N ''
         fi
         ssh-add -d $RSA_KEY_FILE 2>/dev/null
-        $BLESS_DIR/bless_client.py "${SOURCE_IP}" "${PUBLIC_KEY}" "${BLESS_CERT}" "$(whoami)"
+        $BLESS_DIR/bless_client.py "${SOURCE_IP}" "${PUBLIC_KEY}" "${BLESS_CERT}" scoffman
         #SOURCE_IP: The source IP where the SSH connection will be initiated from
 
         #PUBLIC_KEY to sign: The id_rsa.pub that will be used in the SSH request.  This is
@@ -133,6 +133,8 @@ function bless_me() {
 # }
 
 function bless_ssh() {
+    SSH_HOST="${1:-"127.0.0.1"}"
+    REMOTE_USER="${2:-ubuntu}"
     bless_me
     RSA_KEY_FILE="$HOME/.ssh/bless_rsa"
     ssh-keygen -R "$1" 2>/dev/null
@@ -140,7 +142,7 @@ function bless_ssh() {
     ssh -o "IdentitiesOnly=yes" \
         -o "UserKnownHostsFile=/dev/null" \
         -o "StrictHostKeyChecking=no" \
-        -i ${RSA_KEY_FILE} "ubuntu@$1"
+        -i "${RSA_KEY_FILE}" "${REMOTE_USER}@${SSH_HOST}"
 }
 
 function bless_tunnel() {

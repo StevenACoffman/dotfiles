@@ -68,7 +68,7 @@ nvm use default
 # uninstall by removing these lines or running `tabtab uninstall sls`
 #[ -f /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.bash ] && . /Users/scoffman/.nvm/versions/node/v8.1.3/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.bash
 
-export PIPENV_DEFAULT_PYTHON_VERSION=3.4.7
+export PIPENV_DEFAULT_PYTHON_VERSION=3.7.3
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
@@ -89,3 +89,7 @@ export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
 #       echo "You do not have pyenv-virtualenv installed"
 #     fi
 # fi
+
+# tabtab source for slss package
+# uninstall by removing these lines or running `tabtab uninstall slss`
+[ -f /Users/scoffman/s3_lambda_es/node_modules/tabtab/.completions/slss.bash ] && . /Users/scoffman/s3_lambda_es/node_modules/tabtab/.completions/slss.bash

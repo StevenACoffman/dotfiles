@@ -413,6 +413,7 @@ ithaka_reset_password() {
 
 jstor_get_token() {
     export ENVIRONMENT="${1:-test}"
+    export APP_NAME="${2:-tdm}"
     RESULT=$(curl -sSk -X POST --header "Content-Type: application/json" --header "Accept: */*" \
     -d "{\"username\": \"${JSTOR_USER}\", \"password\": \"${JSTOR_PASSWORD}\"}" \
     "http://iac-aaa.apps.${ENVIRONMENT}.cirrostratus.org:80/api/login")
@@ -420,5 +421,15 @@ jstor_get_token() {
     ACCESS_SESSION_SIGNATURE=$(echo -n "$RESULT" | jq -r '.session.sessionSignature')
     ACCESS_SESSION_TIMED_SIGNATURE=$(echo -n "$RESULT" | jq -r '.session.sessionTimedSignature')
     UUID=$(uuidgen)
-    curl -sSk "https://www.jstor.org/api/labs-jwt-service/iac-jwt?appName=ugw&uuid=${UUID}&AccessSession=${ACCESS_SESSION}&AccessSessionSignature=${ACCESS_SESSION_SIGNATURE}&AccessSessionTimedSignature=${ACCESS_SESSION_TIMED_SIGNATURE}" | jq -r .jwt
+    curl -sSk "https://www.jstor.org/api/labs-jwt-service/iac-jwt?appName=${APP_NAME}&uuid=${UUID}&AccessSession=${ACCESS_SESSION}&AccessSessionSignature=${ACCESS_SESSION_SIGNATURE}&AccessSessionTimedSignature=${ACCESS_SESSION_TIMED_SIGNATURE}" | jq -r .jwt
+}
+
+
+key_ssh ()
+{
+    IP_ADDRESS=${1:-127.0.0.1}
+    #ec2-user for amazon ami
+    SSH_USER=${2:-ubuntu}
+    RSA_KEY_FILE="$HOME/.ssh/cfn-sagoku-key.pem";
+    ssh -o "ForwardAgent=yes" -o "IdentitiesOnly=yes" -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -i ${RSA_KEY_FILE} "${SSH_USER}@${IP_ADDRESS}"
 }

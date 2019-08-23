@@ -162,14 +162,16 @@ function dang_it_make_better_name_later() {
 
 function gimme_mini() {
     # asdf local kubectl 1.11.0
-    export ASDF_KUBECTL_VERSION=1.11.0
+    export ASDF_KUBECTL_VERSION=1.13.4
     kubectl completion bash > $(brew --prefix)/etc/bash_completion.d/kubectl
-    minikube start --extra-config=apiserver.authorization-mode=RBAC
+    export KUBECONFIG="$HOME/.kube/kubeconfig.minikube.yaml";
+    minikube start --memory 7168 --disk-size 20g --extra-config=apiserver.authorization-mode=RBAC
+    minikube addons enable ingress
     kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
     kubectl create clusterrolebinding default-cluster-admin --clusterrole=cluster-admin --serviceaccount=default:default
     kubectl -n kube-system create sa tiller
     kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-    helm init --service-account tiller
+    # helm init --service-account tiller
 #     helm install stable/kube2iam --name kube2iam \
 # --set=extraArgs.base-role-arn=arn:aws:iam::$AWS_ACCOUNT_ID:role/,extraArgs.default-role=$AWS_KUBE2IAM_DEFAULT_ROLE \
 # --set host.iptables=true \
@@ -179,6 +181,116 @@ function gimme_mini() {
 # --namespace kube-system
 
 }
+
+regimme_mini_dns ()
+{
+    export ASDF_KUBECTL_VERSION=1.13.4
+    kubectl completion bash > $(brew --prefix)/etc/bash_completion.d/kubectl
+    export KUBECONFIG="$HOME/.kube/kubeconfig.minikube.yaml";
+    echo "Deleting current route"
+    sudo route -n delete 10/24 > /dev/null 2>&1
+    echo "Adding new route 10.0.0.0/24 $(minikube ip)"
+    sudo route -n add 10.0.0.0/24 $(minikube ip)
+    echo "Get interfaces:"
+    ifconfig 'bridge0' | grep member | awk '{print $2}'
+    interfaces_array=( $(ifconfig 'bridge0' | grep member | awk '{print $2}') )
+    echo "Set firewall"
+    for interface in "${interfaces_array[@]}"
+    do
+        sudo ifconfig bridge0 -hostfilter $interface
+    done
+    echo Done!
+}
+
+regimme_mini_svc () {
+
+    echo Setting up minikube environment for you
+
+    brew cask list minikube > /dev/null 2>&1
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+        echo "minikube not installed, so installing now"
+        brew cask install minikube
+    fi
+
+    brew list kubectl > /dev/null 2>&1
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+        echo "kubectl not installed, so installing now"
+        brew install kubectl
+    fi
+
+    brew list dnsmasq > /dev/null 2>&1
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+        echo "dnsmasq not installed, so installing now"
+        brew install dnsmasq
+    fi
+
+    export ASDF_KUBECTL_VERSION=1.13.4
+    kubectl completion bash > $(brew --prefix)/etc/bash_completion.d/kubectl
+    export KUBECONFIG="$HOME/.kube/kubeconfig.minikube.yaml";
+    minikube status > /dev/null 2>&1
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+        echo "Minikube is not yet running, so starting it"
+        minikube start --memory 7168 --disk-size 20g --extra-config=apiserver.authorization-mode=RBAC
+        minikube addons enable ingress
+    fi
+
+    # brew install dnsmasq
+    MINIKUBE_IP="$(minikube ip)"
+    echo Minikube IP is $MINIKUBE_IP
+    echo Setting local docker build context to minikube
+    eval "$(minikube docker-env)"
+
+    echo Setting dnsmasq to resolve minikube ingress
+
+    grep -Fxq 'bind-interfaces' /usr/local/etc/dnsmasq.conf
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+      echo 'bind-interfaces' >> /usr/local/etc/dnsmasq.conf
+    fi
+
+    grep -Fxq 'listen-address=127.0.0.1' /usr/local/etc/dnsmasq.conf
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+      echo 'listen-address=127.0.0.1' >> /usr/local/etc/dnsmasq.conf
+    fi
+
+    RESOLVE_MINIKUBE_INGRESS="address=/ingress.local/${MINIKUBE_IP}"
+    grep -Fxq "${RESOLVE_MINIKUBE_INGRESS}" /usr/local/etc/dnsmasq.conf
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+      #remove outdated minikube ip address references, if any
+      sed -i.bak '/^address=\/ingress.local/d' /usr/local/etc/dnsmasq.conf
+      rm /usr/local/etc/dnsmasq.conf.bak
+      echo "${RESOLVE_MINIKUBE_INGRESS}" >> /usr/local/etc/dnsmasq.conf
+    fi
+    sudo mkdir -p /etc/resolver/
+    sudo tee -a /etc/resolver/ingress.local > /dev/null <<'EOF'
+nameserver 127.0.0.1
+domain ingress.local
+search ingress.local default.ingress.local
+options ndots:5
+EOF
+    echo Restarting DNS and flushing caches
+    sudo brew services restart dnsmasq
+
+    sudo killall -HUP mDNSResponder; sleep 2
+    # echo check what's happening:
+    # scutil --dns
+}
+
+
+regimme_mini ()
+{
+    export ASDF_KUBECTL_VERSION=1.13.4;
+    kubectl completion bash > $(brew --prefix)/etc/bash_completion.d/kubectl;
+    export KUBECONFIG="$HOME/.kube/kubeconfig.minikube.yaml";
+    #alias minikube=/usr/local/etc/minikube-ingress-dns/minikube-ingress-dns-macos
+}
+
 obtain_role_arn() {
   if [[ $STACK_NAME == "" ]]
   then
@@ -199,14 +311,29 @@ obtain_role_arn() {
 
 set_kubecontext() {
   printf "attempting to update your $KUBECONFIG context for the cluster ${CLUSTER_NAME}...\n"
-  EP=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.endpoint --output text)
-  CC=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.certificateAuthority.data --output text)
-  KUBE_ROLE_ARN='arn:aws:iam::594813696195:role/sequoia-FullV1'
+  AWS_PATH="/usr/local/bin"
+  EP=$(${AWS_PATH}/aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.endpoint --output text)
+  CC=$(${AWS_PATH}/aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.certificateAuthority.data --output text)
+  # KUBE_ROLE_ARN='arn:aws:iam::594813696195:role/sequoia-FullV1'
+
+  # export KUBE_ROLE_ARN="arn:aws:iam::594813696195:role/$(/usr/local/bin/aws sts get-caller-identity --query 'Arn' --output text | cut -f 2 -d '/')"
+  # eksctl utils write-kubeconfig --name=${CLUSTER_NAME} --kubeconfig=$KUBECONFIG --set-kubeconfig-context=true
+
   # aws eks update-kubeconfig --name $CLUSTER_NAME --kubeconfig $KUBECONFIG --role-arn $KUBE_ROLE_ARN
   # sed -e "s%<endpoint-url>%${EP}%g" \
   # -e "s%<base64-encoded-ca-cert>%${CC}%g" \
   # -e "s%<cluster-name>%${CLUSTER_NAME}%g" \
   # ~/.kube/kubeconfig.tmpl > $KUBECONFIG
+
+  # command: aws-vault
+  # args:
+  #   - "exec"
+  #   - "core"
+  #   - "--"
+  #   - "aws-iam-authenticator"
+  #   - "token"
+  #   - "-i"
+  #   - "${CLUSTER_NAME}"
 cat <<EOF > $KUBECONFIG
 apiVersion: v1
 clusters:
@@ -227,28 +354,31 @@ users:
   user:
     exec:
       apiVersion: client.authentication.k8s.io/v1alpha1
-      command: aws-vault
+      command: aws-iam-authenticator
       args:
-        - "exec"
-        - "core"
-        - "--"
-        - "aws-iam-authenticator"
-        - "token"
-        - "-i"
-        - "${CLUSTER_NAME}"
+      - "token"
+      - "-i"
+      - "${CLUSTER_NAME}"
 EOF
   printf "\n...done\n\n"
 }
 
 function eksme() {
-    export STACK_NAME="${STACK_NAME:-test}"
-#    export CLUSTER_NAME="${CLUSTER_NAME:-labs-v1}"
-    export CLUSTER_NAME="${STACK_NAME}-c20n"
-    export KUBECONFIG="$HOME/.kube/config_eks_${CLUSTER_NAME}"
 
-# asdf local kubectl 1.10.7
-    export ASDF_KUBECTL_VERSION=1.10.7
+    export SGK_ENVIRONMENT="${1:-test}"
+    #export CLUSTER_NAME="${2:-${SGK_ENVIRONMENT}-c20n}"
+    #export STACK_NAME="${3:-${SGK_ENVIRONMENT}}"
+    export CLUSTER_NAME="${2:-labs-${SGK_ENVIRONMENT}}"
+    export STACK_NAME="${STACK_NAME:-eksctl-${CLUSTER_NAME}-cluster}"
+    export KUBECONFIG="$HOME/.kube/kubeconfig.${CLUSTER_NAME}.yaml"
     set_kubecontext
+
+    # export ASDF_KUBECTL_VERSION=1.12.7
+    # export CLUSTER_NAME="$(eksctl get cluster --region=$AWS_REGION | sed -n 2p | awk '{print $1}')"
+    # export KUBECONFIG="$HOME/.kube/eksctl/clusters/${CLUSTER_NAME}"
+    # eksctl utils write-kubeconfig --name=${CLUSTER_NAME}
+
+
 }
 
 function eks_create_cluster() {
@@ -259,7 +389,7 @@ function eks_create_cluster() {
     export EKS_SUBNET_IDS="subnet-880c6bfe, subnet-e9da6ec3, subnet-d3853a8b, subnet-d4853a8c, subnet-890c6bff, subnet-edda6ec7"
     export EKS_SECURITY_GROUPS="sg-63659818"
 
-    $ aws eks create-cluster \
+    aws eks create-cluster \
       --name k8s-workshop \
       --role-arn $EKS_SERVICE_ROLE \
       --resources-vpc-config subnetIds=${EKS_SUBNET_IDS},securityGroupIds=${EKS_SECURITY_GROUPS} \
@@ -301,17 +431,22 @@ function eks_launch_worker_nodes() {
 
 function eks_get_worker_role_arn() {
     export CLUSTER_NAME="${CLUSTER_NAME:-labs-v1}"
-    export AWS_STACK_NAME="${CLUSTER_NAME}-eks-workers"
+    export AWS_STACK_NAME="${AWS_STACK_NAME:-eksctl-labs-test-cluster}"
+    # AWS_STACK_NAME=eksctl-${CLUSTER_NAME}-nodegroup-${CLUSTER_NAME}-m5-private-1a
+    export CLUSTER_NAME="labs-test"
+
     export ACCT_ROLE_ARN_PRE="arn:aws:iam::594813696195:role/"
-    RA="$(aws cloudformation list-stack-resources --stack-name "${AWS_STACK_NAME}" --query 'StackResourceSummaries[?LogicalResourceId==`NodeInstanceRole`].PhysicalResourceId' --output text)"
-    export NODE_ROLE_ARN="${ACCT_ROLE_ARN_PRE}${RA}"
+    RA="$(aws cloudformation list-stack-resources --stack-name "${AWS_STACK_NAME}" \
+    --query 'StackResourceSummaries[?LogicalResourceId==`NodeInstanceRole`].PhysicalResourceId' \
+    --output text)"
+    export NODE_ROLE_ARN="arn:aws:iam::594813696195:role/eks-nodes-base-role"
     echo "${NODE_ROLE_ARN}"
 }
 
 function eks_apply_auth_configmap() {
     eks_get_worker_role_arn
 #    read -r -d '' EKS_AUTH_CONFIGMAP <<EOF
-cat <<EOF | kubectl create -f -
+cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -338,5 +473,52 @@ data:
       groups:
         - system:masters
 EOF
+
+}
+
+
+function labseksme() {
+    export SGK_ENVIRONMENT="${1:-test}"
+    export CLUSTER_NAME="${2:-labs-${SGK_ENVIRONMENT}}"
+    export STACK_NAME="${STACK_NAME:-eksctl-${CLUSTER_NAME}-cluster}"
+    export KUBECONFIG="$HOME/.kube/kubeconfig.${CLUSTER_NAME}.yaml"
+
+# asdf local kubectl 1.10.7
+    export ASDF_KUBECTL_VERSION=1.12.7
+    #printf "attempting to update your $KUBECONFIG context for the cluster ${CLUSTER_NAME}...\n"
+    #eksctl utils write-kubeconfig --name=${CLUSTER_NAME} --kubeconfig=${KUBECONFIG} --set-kubeconfig-context=true
+    set_kubecontext
+    #printf "\n...done\n\n"
+}
+
+
+function dashboard() {
+    export SGK_ENVIRONMENT=${SGK_ENVIRONMENT:-test}
+    export CLUSTER_NAME="${CLUSTER_NAME:-labs-${SGK_ENVIRONMENT}}"
+    export KUBECONFIG="$HOME/.kube/kubeconfig.${CLUSTER_NAME}.yaml"
+
+    case $SGK_ENVIRONMENT in
+        test|prod) echo Opening Dasbboard for $CLUSTER_NAME in $SGK_ENVIRONMENT ;;
+        *) echo "SGK_ENVIRONMENT $SGK_ENVIRONMENT not valid" && return 1;;
+    esac
+
+    if !hash aws-iam-authenticator 2>/dev/null
+    then
+        echo 'Make sure you have the aws-iam-authenticator binary installed. You can install it with:'
+        echo 'go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator'
+        return 1
+    fi
+    aws-iam-authenticator token -i "${CLUSTER_NAME}" | jq -r ".status.token" | pbcopy
+    open 'https://labs-dashboard.'${SGK_ENVIRONMENT}'.cirrostratus.org/#!/login'
+    # KUBECTL_PROXY_PID=$(lsof -t -i :8001)
+    # if [[ -n "${KUBECTL_PROXY_PID:-}" ]]
+    # then
+    #   kill -9 "${KUBECTL_PROXY_PID}"
+    # else
+    #     echo "Nothing running listening to 8001"
+    # fi
+    # kubectl proxy &
+    # aws-iam-authenticator token -i "${CLUSTER_NAME}" -r arn:aws:iam::594813696195:role/sequoia-DevelopmentV1 | jq -r ".status.token" | pbcopy
+    #open 'http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login'
 
 }

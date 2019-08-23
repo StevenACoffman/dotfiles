@@ -47,9 +47,10 @@ then
   echo "brew update"
   brew update
   echo "brew upgrade"
-  brew upgrade --all
+  brew upgrade
   brew cleanup -s # -s :scrub the cache, removing downloads for even the latest
-  brew cask cleanup
+  brew cask upgrade
+  brew cleanup -s
   brew doctor
 fi
 

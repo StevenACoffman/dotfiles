@@ -39,7 +39,7 @@ function slack_arrow() {
         EMOJI="$i"
         echo "$TEXT: $EMOJI"
         curl --silent -X GET "https://slack.com/api/users.profile.set?token=${SLACK_TOKEN}&profile=%7B%20%22status_text%22%3A%20%22${TEXT}%22%2C%20%22status_emoji%22%3A%20%22%3A${EMOJI}%3A%22%20%7D&pretty=1" >/dev/null
-        sleep 10
+        sleep 1
       done
     done
 }

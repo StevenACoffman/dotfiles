@@ -139,7 +139,6 @@ function list_cidr_blocks() {
     # replace test with prod
     aws ec2 describe-subnets --filter "Name=tag:sequoia:environment,Values=test" "Name=tag-value,Values=test-public-*" --query 'Subnets[].CidrBlock'
 }
-# arn:aws:iam::594813696195:group/sequoia-core
 
 function avs() {
     while [ 1 ]
@@ -148,21 +147,28 @@ function avs() {
         VAULT_SERVER_PID=$(lsof -t -i :9099)
         if [[ -n "${VAULT_SERVER_PID:-}" ]]
         then
+          echo "aws-vault server is already running, so attempting to kill, password may be required"
           kill -9 "${VAULT_SERVER_PID}"
+          sudo killall aws-vault
         else
             echo "Nothing running listening to 9099"
         fi
 
+        ACTIVE_SESSION="$(aws-vault list --sessions)"
+        if [[ -n "${TOTP:-}" ]]
+        then
+        echo "Removing stale session"
         aws-vault remove --sessions-only\
-         "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+         "${AWS_VAULT_DEFAULT_PROFILE:-engineer}"\
          2>&1 >/dev/null
+        fi
 
          export TOTP="$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia})"
          if [[ -n "${TOTP:-}" ]]
          then
            echo "Attempting to renew session with MFA OTP"
            # 3540 seconds = 59 minutes
-           timeout3 -t 3540 aws-vault --debug exec --mfa-token=${TOTP} -s "${AWS_VAULT_DEFAULT_PROFILE:-core}"
+           timeout3 -t 3540 aws-vault --debug exec --mfa-token=${TOTP} -s "${AWS_VAULT_DEFAULT_PROFILE:-engineer}"
          else
              echo "No MFA TOTP! 2fa did not find a MFA TOTP."
          fi
@@ -180,35 +186,77 @@ function avs() {
 
 function avlc() {
     export TOTP="$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia})"
-    aws-vault login --mfa-token=${TOTP} "${AWS_VAULT_DEFAULT_PROFILE:-core}"
+    aws-vault login --mfa-token=${TOTP} "${AWS_VAULT_DEFAULT_PROFILE:-engineer}"
 }
+
+function avlc_core() {
+    export AWS_VAULT_DEFAULT_PROFILE=core
+    avlc
+}
+
+function avs_core() {
+    export AWS_VAULT_DEFAULT_PROFILE=core
+    avs
+}
+
+
+function avlc_labs() {
+    export AWS_VAULT_DEFAULT_PROFILE=labs
+    avlc
+}
+
+function avs_labs() {
+    export AWS_VAULT_DEFAULT_PROFILE=labs
+    avs
+}
+
+function avkill {
+    sudo killall aws-vault
+}
+
 # function avlc() {
 #     aws-vault remove --sessions-only\
-#      "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+#      "${AWS_VAULT_DEFAULT_PROFILE:-engineer}"\
 #      2>&1 >/dev/null
 #
-#     aws-vault login "${AWS_VAULT_DEFAULT_PROFILE:-core}"\
+#     aws-vault login "${AWS_VAULT_DEFAULT_PROFILE:-engineer}"\
 #      <<< "$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia-scoffman})"\
 #      2> >( sed '$d' >&2 )\
 #      1> >( sed '$d' >&1 )
 # }
 
 function awhoami() {
-    aws sts get-caller-identity
+    /usr/local/bin/aws sts get-caller-identity
 }
 
 function aresync() {
     # If a user's device is not synchronized when they try to use it,
     # the user's sign-in attempt fails and IAM prompts the user to
     # resynchronize the device.
-    #aws-vault exec --no-session ithakasequoia -- /usr/local/bin/aws sts get-caller-identity --output text --query 'Arn'  | awk -F\/ '{print $NF}'
-    AWS_USER=$(aws-vault exec --no-session ithakasequoia -- /usr/local/bin/aws iam get-user --output text --query 'User.UserName')
+    AWS_MY_USERNAME=${AWS_MY_USERNAME:-$(/usr/local/bin/aws iam get-user --output text --query 'User.UserName'}
 
     totp1="$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia})"; totp2="${totp1}"; while [ "${totp1}" == "${totp2}" ]; do totp2="$(2fa ${AWS_MFA_NAME:-aws-ithakasequoia})"; echo "${totp2}"; sleep 1; done
     # aws-vault exec --no-session ithakasequoia -- /usr/local/bin/aws iam list-virtual-mfa-devices
     aws-vault exec --no-session ithakasequoia -- /usr/local/bin/aws iam resync-mfa-device \
-    --user-name "${AWS_USER}" \
-    --serial-number "arn:aws:iam::594813696195:mfa/${AWS_USER}" \
+    --user-name "${AWS_MY_USERNAME}" \
+    --serial-number "arn:aws:iam::594813696195:mfa/${AWS_MY_USERNAME}" \
     --authentication-code1 "${totp1}" \
     --authentication-code2 "${totp2}"
+}
+
+function iam_groot() {
+    echo aws iam add-user-to-group --user-name "${AWS_MY_USERNAME}" --group-name "${AWS_ADMIN_GROUP}"
+}
+
+function iam_not_groot() {
+    AWS_CLI_PATH="${AWS_CLI_PATH:-/usr/local/bin}"
+    "${AWS_CLI_PATH}/aws" iam remove-user-from-group --user-name "${AWS_MY_USERNAME}" --group-name "${AWS_ADMIN_GROUP}"
+}
+
+function iam_who_iam() {
+    export AWS_ACCOUNT_ID="281318675473"
+    export AWS_DEFAULT_PROFILE=${1:-"personalhelper"}
+    export AWS_MFA_NAME="aws-edgewiseinannarbor"
+    TOTP="$(2fa ${AWS_MFA_NAME})"
+    aws-vault exec scoffman --mfa-token=${TOTP} -- /usr/local/bin/aws sts get-caller-identity
 }

@@ -21,3 +21,5 @@ export PATH="$HOME/.cargo/bin:$PATH"
 . $HOME/.asdf/asdf.sh
 
 . $HOME/.asdf/completions/asdf.bash
+
+export PATH="$HOME/.poetry/bin:$PATH"

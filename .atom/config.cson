@@ -20,7 +20,6 @@
     telemetryConsent: "limited"
   editor:
     showInvisibles: true
-    tabLength: 4
     tabType: "soft"
   "exception-reporting":
     userId: "b9e61007-1fb3-1b0b-ac6f-31c147a59579"

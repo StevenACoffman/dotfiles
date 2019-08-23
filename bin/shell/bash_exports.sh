@@ -5,12 +5,14 @@
 # Make vim the default editor
 export EDITOR="mate --wait"
 
-# Set Java to a nice reasonable version
-
+# Set Java to a nice reasonable version, wait no we are stuck in the past
 JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 export JAVA_HOME
 #export JAVA_HOME='/System/Library/Frameworks/JavaVM.framework/Home'
 export GOPATH=$HOME/go
+export GO111MODULE="on"
+#export GOROOT=/usr/local/opt/go/libexec
+
 #Possibly Problematic next line:
 export ANT_HOME=/usr/local/opt/ant/libexec
 export MAVEN_HOME=/usr/local/opt/maven/libexec
@@ -21,11 +23,17 @@ export NODE_PATH="/usr/local/lib/node_modules"
 export PYENV_ROOT=/usr/local/var/pyenv
 export SCALA_HOME=/usr/local/opt/scala
 export AWS_REGION="us-east-1"
+export AWS_SDK_LOAD_CONFIG=true
 export AWS_DEFAULT_REGION="us-east-1"
 export AWS_DEFAULT_OUTPUT="json"
-export AWS_VAULT_DEFAULT_PROFILE='core'
-export AWS_VAULT_KEYCHAIN_NAME='login'
 export AWS_MFA_NAME='aws-ithakasequoia'
+export AWS_ACCOUNT_ID=594813696195
+export AWS_VAULT_DEFAULT_PROFILE='engineer'
+#export AWS_DEFAULT_PROFILE="personalhelper"
+#export AWS_MFA_NAME="aws-edgewiseinannarbor"
+export AWS_VAULT_KEYCHAIN_NAME='login'
+export AWS_ADMIN_GROUP='sequoia-core'
+export AWS_MY_USERNAME='scoffman'
 # 3600s is max for chainging roles, but 14400s is mfa policy
 export AWS_ASSUME_ROLE_TTL='3600s'
 export AWS_SESSION_TTL='12h'
@@ -55,6 +63,9 @@ export PHANTOMJS_BIN
 # Make new shells get the history lines from all previous
 # shells instead of the default "last window closed" history
 export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+
+#default kubernetes client version
+export ASDF_KUBECTL_VERSION=1.12.7
 
 #Set shell to have reasonable limits, see http://docs.basho.com/riak/latest/ops/tuning/open-files-limit/#Mac-OS-X
 ulimit -n 65536

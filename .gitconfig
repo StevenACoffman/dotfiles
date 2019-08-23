@@ -1,6 +1,7 @@
 [user]
 	name = Steve Coffman
 	email = steve.coffman@ithaka.org
+	signingkey = F1D948870F3F2650
 [core]
 	excludesfile = /Users/scoffman/.gitignore
 	editor = mate -w
@@ -37,7 +38,7 @@
 	helper = osxkeychain
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
+	path =
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
@@ -70,9 +71,14 @@
 	required = true
 [commit]
 	template = /Users/scoffman/.stCommitMsg
+	gpgsign = true
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
 [url "git@github.com:"]
 	insteadOf = https://github.com/
 [protocol]
 	version = 2
+[gpg]
+	program = gpg2
+[commit]
+	template = ~/.gitmessage
