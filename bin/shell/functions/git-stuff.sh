@@ -5,6 +5,7 @@ function git-diff-exclude-package-lock() {
 }
 
 function gb () {
+  # Display Git branch
     git rev-parse --abbrev-ref HEAD
 }
 
@@ -26,6 +27,10 @@ function commit() {
     fi
 
     git commit -asm "${CURRENT_BRANCH}: ${MESSAGE}"
+    # -s : Add Signed-off-by line by the committer at the end of the commit log message.
+    # -S[<keyid>]: GPG-sign commits. The keyid argument is optional and defaults to the committer identity; if specified, it must be stuck to the option without a space.
+    # -a: Tell the command to automatically stage files that have been modified and deleted, but new files you have not told Git about are not affected.
+    # -m <msg>: Use the given as the commit message.
 }
 
 function test-safe-push() {

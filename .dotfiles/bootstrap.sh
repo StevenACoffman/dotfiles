@@ -1,9 +1,9 @@
 #!/bin/bash
 
 homebrew/install.sh
-java/install.sh
-ruby/install.sh
-python/install.sh
+#java/install.sh
+#ruby/install.sh
+#python/install.sh
 
 # gitconfig is wrong and needs maintenance, but we don't need to recreate it
 #gitconfig/install.sh

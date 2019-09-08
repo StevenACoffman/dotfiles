@@ -53,6 +53,7 @@ beyond-compare \
 caffeine \
 firefox \
 google-chrome \
+gpg-suite \
 imageoptim \
 keka \
 lastpass \
