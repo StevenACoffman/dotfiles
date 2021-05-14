@@ -20,6 +20,7 @@ fi
 
 for PACKAGE in \
 git \
+duti \
 curl \
 bash-completion \
 lynx \
@@ -38,11 +39,7 @@ watchman; do
     brew install $PACKAGE
   fi
 done
-if ! brew info brew-cask &>/dev/null
-then
-  brew tap homebrew/cask
-  brew tap buo/cask-upgrade
-fi
+
 
 # Install applications
 for PACKAGE in \
@@ -66,23 +63,26 @@ textmate \
 tunnelbear \
 vlc \
 ; do
-  if [ ! -d "/opt/homebrew-cask/Caskroom/$PACKAGE" ]; then
+  if [ ! -d "/usr/local/Caskroom/$PACKAGE" ]; then
   # Control will enter here if $PACKAGE doesn't exist.
   APPNAME="$(echo $PACKAGE|tr '-' ' ').app"
   #echo $PACKAGE was not installed with cask
     if [ ! -n "$(find /Applications -maxdepth 1 -iname "$APPNAME")" ]; then
-      brew cask install $PACKAGE
+      brew install --cask $PACKAGE
     fi
   fi
 done
 
 #Iterm2 has legacy item.app name
-if [ ! -d "/opt/homebrew-cask/Caskroom/iterm2" ]; then
+if [ ! -d "/usr/local/Caskroom/iterm2" ]; then
 #echo iterm2 was not installed with cask
   if [ ! -n "$(find /Applications -maxdepth 1 -iname "iterm.app")" ]; then
     brew cask install iterm2
   fi
 fi
+
+duti -s sh com.macromates.TextMate
+duti -s txt com.macromates.TextMate
 
 # Install developer Fonts
 brew tap caskroom/fonts
@@ -94,7 +94,7 @@ font-source-code-pro \
 font-open-sans \
 font-dejavu-sans \
 ; do
-  if [ ! -d "/opt/homebrew-cask/Caskroom/$PACKAGE" ]; then
+  if [ ! -d "/usr/local/Caskroom/$PACKAGE" ]; then
     brew cask install $PACKAGE
   fi
 done
