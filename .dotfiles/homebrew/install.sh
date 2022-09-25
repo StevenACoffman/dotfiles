@@ -24,15 +24,12 @@ duti \
 curl \
 bash-completion \
 lynx \
-mas \
 pandoc \
 redis \
 shellcheck \
-springboot \
 ssh-copy-id \
 uncrustify \
 wget \
-nvm \
 watchman; do
   if [ -z "$(brew ls --versions $PACKAGE)" ]
   then
@@ -45,9 +42,7 @@ done
 for PACKAGE in \
 alfred \
 anki \
-atom \
 beyond-compare \
-caffeine \
 firefox \
 google-chrome \
 gpg-suite \
@@ -60,10 +55,9 @@ sourcetree \
 stellarium\
 sublime-text \
 textmate \
-tunnelbear \
 vlc \
 ; do
-  if [ ! -d "/usr/local/Caskroom/$PACKAGE" ]; then
+  if [ ! -d "/opt/homebrew/Caskroom/$PACKAGE" ]; then
   # Control will enter here if $PACKAGE doesn't exist.
   APPNAME="$(echo $PACKAGE|tr '-' ' ').app"
   #echo $PACKAGE was not installed with cask
@@ -74,10 +68,10 @@ vlc \
 done
 
 #Iterm2 has legacy item.app name
-if [ ! -d "/usr/local/Caskroom/iterm2" ]; then
+if [ ! -d "/opt/homebrew/Caskroom/iterm2" ]; then
 #echo iterm2 was not installed with cask
   if [ ! -n "$(find /Applications -maxdepth 1 -iname "iterm.app")" ]; then
-    brew cask install iterm2
+    brew install --cask iterm2
   fi
 fi
 
@@ -94,8 +88,8 @@ font-source-code-pro \
 font-open-sans \
 font-dejavu-sans \
 ; do
-  if [ ! -d "/usr/local/Caskroom/$PACKAGE" ]; then
-    brew cask install $PACKAGE
+  if [ ! -d "/opt/homebrew/Caskroom/$PACKAGE" ]; then
+    brew install --cask $PACKAGE
   fi
 done
 
