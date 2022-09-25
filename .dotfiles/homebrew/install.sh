@@ -13,6 +13,8 @@ then
 else
   echo "  Installing Homebrew for you."
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/steve/.zprofile
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 # Install homebrew packages
