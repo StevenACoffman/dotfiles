@@ -51,11 +51,10 @@ gpg-suite \
 imageoptim \
 keka \
 lastpass \
-screenhero \
+pop \
 skype \
 sourcetree \
-stellarium\
-sublime-text \
+stellarium \
 textmate \
 vlc \
 ; do
@@ -81,7 +80,7 @@ duti -s sh com.macromates.TextMate
 duti -s txt com.macromates.TextMate
 
 # Install developer Fonts
-brew tap caskroom/fonts
+brew tap homebrew/cask-fonts
 for PACKAGE in \
 font-monoid \
 font-fira-code \
