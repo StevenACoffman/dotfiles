@@ -32,6 +32,10 @@ shellcheck \
 ssh-copy-id \
 uncrustify \
 asdf \
+gh \
+jq \
+ko \
+mage \
 fzf \
 wget \
 watchman; do
