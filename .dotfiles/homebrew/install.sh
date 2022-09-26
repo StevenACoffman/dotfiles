@@ -31,6 +31,8 @@ redis \
 shellcheck \
 ssh-copy-id \
 uncrustify \
+asdf \
+fzf \
 wget \
 watchman; do
   if [ -z "$(brew ls --versions $PACKAGE)" ]
